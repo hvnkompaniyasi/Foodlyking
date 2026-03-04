@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Search, 
   Package, 
@@ -10,58 +9,99 @@ import {
   XCircle,
   Truck,
   Filter,
-  ArrowRight
+  ArrowRight,
+  Loader2,
+  Phone
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { supabase } from '@/lib/supabase';
+import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-
-type OrderStatus = 'Yangi' | 'Olingan' | 'Yetkazilgan' | 'Bekor qilingan';
-
-const ORDERS = [
-  { id: '1001', customer: 'Azizov Shokir', total: 45.50, status: 'Yangi', time: '5 daqiqa oldin', items: 3 },
-  { id: '1002', customer: 'Malika Karimova', total: 22.00, status: 'Olingan', time: '15 daqiqa oldin', items: 1 },
-  { id: '1003', customer: 'Bobur Mirzo', total: 89.90, status: 'Yetkazilgan', time: '1 soat oldin', items: 5 },
-  { id: '1004', customer: 'Oyatillo Abdujalilov', total: 12.00, status: 'Bekor qilingan', time: '2 soat oldin', items: 2 },
-  { id: '1005', customer: 'Sevara Azimova', total: 34.20, status: 'Yangi', time: '10 daqiqa oldin', items: 2 },
-];
+import { format } from 'date-fns';
+import { uz } from 'date-fns/locale';
 
 export default function AdminOrdersPage() {
-  const [activeTab, setActiveTab] = useState<OrderStatus | 'Barchasi'>('Barchasi');
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('Barchasi');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredOrders = ORDERS.filter(order => {
-    const matchesStatus = activeTab === 'Barchasi' || order.status === activeTab;
-    const matchesSearch = order.customer.toLowerCase().includes(searchQuery.toLowerCase()) || order.id.includes(searchQuery);
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setOrders(data || []);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Xatolik",
+        description: "Buyurtmalarni yuklashda xatolik yuz berdi.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const statusMap: Record<string, string> = {
+    'new': 'Yangi',
+    'preparing': 'Olingan',
+    'delivered': 'Yetkazilgan',
+    'cancelled': 'Bekor qilingan'
+  };
+
+  const filteredOrders = orders.filter(order => {
+    const statusLabel = statusMap[order.status] || order.status;
+    const matchesStatus = activeTab === 'Barchasi' || statusLabel === activeTab;
+    const matchesSearch = 
+      order.customer_name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      order.id.includes(searchQuery);
     return matchesStatus && matchesSearch;
   });
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'Yangi': return <Package className="h-5 w-5" />;
-      case 'Olingan': return <Truck className="h-5 w-5" />;
-      case 'Yetkazilgan': return <CheckCircle2 className="h-5 w-5" />;
-      case 'Bekor qilingan': return <XCircle className="h-5 w-5" />;
-      default: return null;
+      case 'new': return <Package className="h-5 w-5" />;
+      case 'preparing': return <Truck className="h-5 w-5" />;
+      case 'delivered': return <CheckCircle2 className="h-5 w-5" />;
+      case 'cancelled': return <XCircle className="h-5 w-5" />;
+      default: return <Package className="h-5 w-5" />;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Yangi': return "bg-primary text-white";
-      case 'Olingan': return "bg-secondary text-white";
-      case 'Yetkazilgan': return "bg-green-500 text-white";
-      case 'Bekor qilingan': return "bg-red-500 text-white";
+      case 'new': return "bg-primary text-white";
+      case 'preparing': return "bg-secondary text-white";
+      case 'delivered': return "bg-green-500 text-white";
+      case 'cancelled': return "bg-red-500 text-white";
       default: return "bg-muted text-muted-foreground";
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <Loader2 className="h-12 w-12 text-primary animate-spin mb-4" />
+        <p className="font-black uppercase text-xs tracking-widest text-primary">Buyurtmalar filtri yuklanmoqda...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-10">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h1 className="text-4xl font-black uppercase tracking-tighter">Buyurtmalar <span className="text-primary">Filtrlash</span></h1>
-          <p className="text-muted-foreground font-bold mt-1 uppercase text-xs tracking-widest">Holatiga ko'ra buyurtmalarni tartiblang</p>
+          <h1 className="text-4xl font-black uppercase tracking-tighter">Buyurtmalar <span className="text-primary">Filtr</span></h1>
+          <p className="text-muted-foreground font-bold mt-1 uppercase text-xs tracking-widest">Xaridlar va yetkazib berish holati</p>
         </div>
         <div className="flex items-center gap-3 bg-white border-2 border-black p-3 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
           <Filter className="h-6 w-6 text-primary" />
@@ -74,7 +114,7 @@ export default function AdminOrdersPage() {
           {['Barchasi', 'Yangi', 'Olingan', 'Yetkazilgan', 'Bekor qilingan'].map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab as any)}
+              onClick={() => setActiveTab(tab)}
               className={cn(
                 "px-8 py-4 rounded-3xl text-xs font-black transition-all whitespace-nowrap uppercase tracking-widest border-2 border-transparent",
                 activeTab === tab 
@@ -111,21 +151,31 @@ export default function AdminOrdersPage() {
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-4">
-                    <span className="font-black text-2xl uppercase tracking-tighter">{order.customer}</span>
-                    <span className="bg-muted px-2 py-1 border-2 border-black rounded text-[10px] font-black">#{order.id}</span>
+                    <span className="font-black text-2xl uppercase tracking-tighter line-clamp-1">{order.customer_name}</span>
+                    <span className="bg-muted px-2 py-1 border-2 border-black rounded text-[10px] font-black shrink-0">#{order.id.slice(0, 8)}</span>
                   </div>
-                  <div className="flex items-center gap-6 text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em]">
-                    <span className="flex items-center gap-2 text-primary"><Clock className="h-4 w-4" /> {order.time}</span>
-                    <span className="flex items-center gap-2"><Package className="h-4 w-4" /> {order.items} mahsulot</span>
+                  <div className="flex flex-wrap items-center gap-6 text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em]">
+                    <span className="flex items-center gap-2 text-primary">
+                      <Clock className="h-4 w-4" /> 
+                      {format(new Date(order.created_at), 'HH:mm • d-MMMM', { locale: uz })}
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <Phone className="h-4 w-4" /> {order.customer_phone}
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <Package className="h-4 w-4" /> {order.items?.length || 0} ta taom
+                    </span>
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center justify-between w-full lg:w-auto lg:gap-20 border-t-4 border-black border-dashed lg:border-none pt-8 lg:pt-0">
                 <div className="text-left lg:text-right space-y-2">
-                  <div className="text-3xl font-black text-primary tracking-tighter">${order.total.toFixed(2)}</div>
+                  <div className="text-3xl font-black text-primary tracking-tighter">
+                    {order.total_amount?.toLocaleString()} so'm
+                  </div>
                   <div className={cn("inline-block font-black rounded-xl border-2 border-black px-4 py-1.5 text-[10px] uppercase tracking-widest shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]", getStatusColor(order.status))}>
-                    {order.status}
+                    {statusMap[order.status] || order.status}
                   </div>
                 </div>
                 

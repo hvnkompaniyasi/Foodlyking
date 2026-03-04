@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -18,6 +17,7 @@ export default function AdminLayout({
 
   useEffect(() => {
     const checkAuth = async () => {
+      // 1. Sessiyani tekshirish
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
@@ -25,6 +25,7 @@ export default function AdminLayout({
         return;
       }
 
+      // 2. Profil va rolni tekshirish
       const { data: profile } = await supabase
         .from('profiles')
         .select('role')
@@ -46,8 +47,10 @@ export default function AdminLayout({
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#F8F9FA]">
-        <Loader2 className="h-12 w-12 text-primary animate-spin mb-4" />
-        <p className="font-black uppercase tracking-widest text-xs">Xavfsiz ulanish tekshirilmoqda...</p>
+        <div className="p-10 flat-card bg-white flex flex-col items-center gap-6">
+          <Loader2 className="h-12 w-12 text-primary animate-spin" />
+          <p className="font-black uppercase tracking-widest text-xs">Xavfsizlik tekshirilmoqda...</p>
+        </div>
       </div>
     );
   }
@@ -57,7 +60,7 @@ export default function AdminLayout({
       <Navbar />
       
       <div className="flex flex-1">
-        <aside className="hidden lg:block w-72 sticky top-20 h-[calc(100vh-5rem)] border-r-4 border-black bg-white overflow-y-auto">
+        <aside className="hidden lg:block w-72 sticky top-20 h-[calc(100vh-5rem)] border-r-4 border-black bg-white overflow-y-auto overflow-x-hidden">
           <DashboardSidebar />
         </aside>
 

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -19,6 +18,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      // 1. Supabase Auth orqali kirish
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -26,7 +26,7 @@ export default function LoginPage() {
 
       if (authError) throw authError;
 
-      // Role tekshirish
+      // 2. Profiles jadvalidan foydalanuvchi rolini tekshirish
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('role')
@@ -35,13 +35,15 @@ export default function LoginPage() {
 
       if (profileError) throw profileError;
 
+      // 3. Faqat 'king' bo'lsa ruxsat berish
       if (profile?.role === 'king') {
         toast({
-          title: "Xush kelibsiz!",
+          title: "Xush kelibsiz, Qirol!",
           description: "Boshqaruv paneliga muvaffaqiyatli kirdingiz.",
         });
         router.push('/admin');
       } else {
+        // Agar rol mos kelmasa, sessiyani yopish
         await supabase.auth.signOut();
         toast({
           variant: "destructive",
@@ -67,10 +69,10 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center bg-primary p-5 border-4 border-black rounded-[2.5rem] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-white mb-6 animate-bounce">
             <ShieldAlert className="h-12 w-12" />
           </div>
-          <h1 className="text-5xl font-black uppercase tracking-tighter">
+          <h1 className="text-5xl font-black uppercase tracking-tighter leading-none">
             FOODLY<span className="text-primary">KING</span>
           </h1>
-          <div className="mt-2 inline-block bg-secondary text-white px-4 py-1 border-2 border-black font-black text-[10px] uppercase tracking-[0.2em] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="mt-4 inline-block bg-secondary text-white px-4 py-1 border-2 border-black font-black text-[10px] uppercase tracking-[0.2em] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             MAXFIY BOSHQARUV PORTALI
           </div>
         </div>
@@ -84,7 +86,7 @@ export default function LoginPage() {
               <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
                 type="email"
-                placeholder="admin@foodlyking.uz"
+                placeholder="king@foodly.uz"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="flat-input pl-12 h-16 text-lg font-bold"

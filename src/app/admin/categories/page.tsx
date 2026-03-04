@@ -1,11 +1,8 @@
-
 'use client';
 
-import { useState } from 'react';
-import { Plus, Pencil, Trash2, Search, MoreVertical, Hash } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from 'react';
+import { Plus, Pencil, Trash2, Search, Hash, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -15,22 +12,55 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from '@/components/ui/label';
-
-const CATEGORIES = [
-  { id: '1', name: 'Burgerlar', count: 12, icon: '🍔' },
-  { id: '2', name: 'Pitssalar', count: 8, icon: '🍕' },
-  { id: '3', name: 'Sushi', count: 15, icon: '🍣' },
-  { id: '4', name: 'Desertlar', count: 6, icon: '🍰' },
-  { id: '5', name: 'Ichimliklar', count: 20, icon: '🥤' },
-  { id: '6', name: 'Ramen', count: 5, icon: '🍜' },
-];
+import { supabase } from '@/lib/supabase';
+import { toast } from '@/hooks/use-toast';
 
 export default function AdminCategoriesPage() {
+  const [categories, setCategories] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredCategories = CATEGORIES.filter(cat => 
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    setLoading(true);
+    try {
+      // Kategoriyalar va ulardagi taomlar sonini olish (supabase relationship orqali)
+      const { data, error } = await supabase
+        .from('categories')
+        .select(`
+          id,
+          name,
+          foods (count)
+        `);
+
+      if (error) throw error;
+      setCategories(data || []);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Xatolik",
+        description: "Kategoriyalarni yuklashda muammo bo'ldi.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredCategories = categories.filter(cat => 
     cat.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <Loader2 className="h-12 w-12 text-secondary animate-spin mb-4" />
+        <p className="font-black uppercase text-xs tracking-widest text-secondary">Kategoriyalar yuklanmoqda...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-10">
@@ -55,10 +85,6 @@ export default function AdminCategoriesPage() {
                 <Label htmlFor="cat-name" className="font-black text-sm uppercase">Kategoriya nomi</Label>
                 <Input id="cat-name" placeholder="Masalan: Burgerlar" className="flat-input h-12" />
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="cat-icon" className="font-black text-sm uppercase">Ikonka (Emoji)</Label>
-                <Input id="cat-icon" placeholder="🍔" className="flat-input h-12 text-center text-2xl" />
-              </div>
             </div>
             <DialogFooter>
               <button className="flat-button-secondary w-full uppercase">Qo'shish</button>
@@ -81,8 +107,8 @@ export default function AdminCategoriesPage() {
         {filteredCategories.map((cat) => (
           <div key={cat.id} className="flat-card p-6 flex flex-col justify-between h-56 bg-white group">
             <div className="flex justify-between items-start">
-              <div className="h-20 w-20 bg-secondary/10 border-2 border-black rounded-2xl flex items-center justify-center text-4xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:scale-110 transition-transform">
-                {cat.icon}
+              <div className="h-20 w-20 bg-secondary/10 border-2 border-black rounded-2xl flex items-center justify-center text-4xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:rotate-6 transition-transform">
+                {cat.name[0].toUpperCase()}
               </div>
               <div className="flex flex-col gap-2">
                 <button className="h-10 w-10 border-2 border-black rounded-xl bg-white flex items-center justify-center hover:bg-muted transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[1px] active:translate-y-[1px]">
@@ -95,9 +121,9 @@ export default function AdminCategoriesPage() {
             </div>
             
             <div className="space-y-2">
-              <h3 className="text-2xl font-black uppercase tracking-tight">{cat.name}</h3>
+              <h3 className="text-2xl font-black uppercase tracking-tight line-clamp-1">{cat.name}</h3>
               <div className="flex items-center gap-2 font-black text-[10px] text-muted-foreground uppercase tracking-widest">
-                <Hash className="h-3 w-3" /> {cat.count} ta mahsulot bor
+                <Hash className="h-3 w-3" /> {cat.foods?.[0]?.count || 0} ta mahsulot bor
               </div>
             </div>
           </div>

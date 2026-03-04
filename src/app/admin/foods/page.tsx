@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -34,14 +33,26 @@ export default function AdminFoodsPage() {
 
   const fetchData = async () => {
     setLoading(true);
-    const [foodsRes, catsRes] = await Promise.all([
-      supabase.from('foods').select('*, categories(name)'),
-      supabase.from('categories').select('*')
-    ]);
+    try {
+      const [foodsRes, catsRes] = await Promise.all([
+        supabase.from('foods').select('*, categories(name)'),
+        supabase.from('categories').select('*')
+      ]);
 
-    if (foodsRes.data) setFoods(foodsRes.data);
-    if (catsRes.data) setCategories(catsRes.data);
-    setLoading(false);
+      if (foodsRes.error) throw foodsRes.error;
+      if (catsRes.error) throw catsRes.error;
+
+      setFoods(foodsRes.data || []);
+      setCategories(catsRes.data || []);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Xatolik",
+        description: "Ma'lumotlarni yuklashda xatolik yuz berdi.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const filteredFoods = foods.filter(food => {
@@ -53,8 +64,8 @@ export default function AdminFoodsPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <Loader2 className="h-10 w-10 text-primary animate-spin mb-4" />
-        <p className="font-black uppercase text-xs">Taomlar ro'yxati yuklanmoqda...</p>
+        <Loader2 className="h-12 w-12 text-primary animate-spin mb-4" />
+        <p className="font-black uppercase text-xs tracking-widest">Taomlar ombori yuklanmoqda...</p>
       </div>
     );
   }
@@ -64,7 +75,7 @@ export default function AdminFoodsPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
         <div>
           <h1 className="text-4xl font-black uppercase tracking-tighter">Taomlar <span className="text-primary">Ombori</span></h1>
-          <p className="text-muted-foreground font-medium mt-1 uppercase text-xs tracking-widest">Maxfiy menyu boshqaruvi</p>
+          <p className="text-muted-foreground font-medium mt-1 uppercase text-xs tracking-widest">Bazadagi barcha mahsulotlar boshqaruvi</p>
         </div>
         
         <Dialog>
@@ -75,7 +86,7 @@ export default function AdminFoodsPage() {
           </DialogTrigger>
           <DialogContent className="sm:max-w-[550px] border-4 border-black rounded-[2rem] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-black uppercase tracking-tight">Yangi mahsulot ma'lumotlari</DialogTitle>
+              <DialogTitle className="text-2xl font-black uppercase tracking-tight">Yangi mahsulot</DialogTitle>
             </DialogHeader>
             <div className="grid gap-6 py-4">
               <div className="grid gap-2">
@@ -149,57 +160,66 @@ export default function AdminFoodsPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-        {filteredFoods.map((dish) => (
-          <div key={dish.id} className="flat-card overflow-hidden group bg-white">
-            <div className="relative h-64 border-b-2 border-black overflow-hidden bg-muted flex items-center justify-center">
-              {dish.image_url ? (
-                <Image 
-                  src={dish.image_url} 
-                  alt={dish.name} 
-                  fill 
-                  className="object-cover group-hover:scale-110 transition-transform duration-700" 
-                />
-              ) : (
-                <ImageIcon className="h-12 w-12 text-muted-foreground opacity-20" />
-              )}
-              <div className="absolute top-4 left-4 bg-primary text-white border-2 border-black px-5 py-2 rounded-xl font-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] text-lg">
-                {dish.price.toLocaleString()} so'm
-              </div>
-            </div>
-            
-            <div className="p-8">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-2xl font-black uppercase tracking-tighter mb-1 leading-none">{dish.name}</h3>
-                  <Badge className="bg-secondary/10 text-secondary border-none font-black text-[10px] uppercase tracking-widest px-0">
-                    {dish.categories?.name}
-                  </Badge>
-                </div>
-                <div className="flex gap-2">
-                  <button className="h-10 w-10 border-2 border-black rounded-xl bg-white flex items-center justify-center hover:bg-muted transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[1px] active:translate-y-[1px]">
-                    <Pencil className="h-4 w-4" />
-                  </button>
-                  <button className="h-10 w-10 border-2 border-black rounded-xl bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[1px] active:translate-y-[1px]">
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+        {filteredFoods.length > 0 ? (
+          filteredFoods.map((dish) => (
+            <div key={dish.id} className="flat-card overflow-hidden group bg-white">
+              <div className="relative h-64 border-b-2 border-black overflow-hidden bg-muted flex items-center justify-center">
+                {dish.image_url ? (
+                  <Image 
+                    src={dish.image_url} 
+                    alt={dish.name} 
+                    fill 
+                    className="object-cover group-hover:scale-110 transition-transform duration-700" 
+                  />
+                ) : (
+                  <ImageIcon className="h-12 w-12 text-muted-foreground opacity-20" />
+                )}
+                <div className="absolute top-4 left-4 bg-primary text-white border-2 border-black px-5 py-2 rounded-xl font-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] text-lg">
+                  {dish.price.toLocaleString()} so'm
                 </div>
               </div>
               
-              <p className="text-muted-foreground font-bold text-sm line-clamp-2 mb-8 leading-relaxed">
-                {dish.description}
-              </p>
-
-              <div className="flex justify-between items-center pt-5 border-t-2 border-black border-dashed font-black text-[10px] uppercase tracking-widest">
-                <div className="flex items-center gap-2 text-primary">
-                  <Clock className="h-4 w-4" /> {dish.preparation_time || '15-20'} DAQ
+              <div className="p-8">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-2xl font-black uppercase tracking-tighter mb-1 leading-none">{dish.name}</h3>
+                    <Badge className="bg-secondary/10 text-secondary border-none font-black text-[10px] uppercase tracking-widest px-0">
+                      {dish.categories?.name}
+                    </Badge>
+                  </div>
+                  <div className="flex gap-2">
+                    <button className="h-10 w-10 border-2 border-black rounded-xl bg-white flex items-center justify-center hover:bg-muted transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[1px] active:translate-y-[1px]">
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                    <button className="h-10 w-10 border-2 border-black rounded-xl bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[1px] active:translate-y-[1px]">
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5 text-green-600">
-                  <CheckCircle className="h-4 w-4" /> {dish.is_available ? 'SOTUVDA' : 'YO\'Q'}
+                
+                <p className="text-muted-foreground font-bold text-sm line-clamp-2 mb-8 leading-relaxed h-10">
+                  {dish.description}
+                </p>
+
+                <div className="flex justify-between items-center pt-5 border-t-2 border-black border-dashed font-black text-[10px] uppercase tracking-widest">
+                  <div className="flex items-center gap-2 text-primary">
+                    <Clock className="h-4 w-4" /> {dish.preparation_time || '15-20'} DAQ
+                  </div>
+                  <div className={cn(
+                    "flex items-center gap-1.5",
+                    dish.is_available ? "text-green-600" : "text-red-500"
+                  )}>
+                    <CheckCircle className="h-4 w-4" /> {dish.is_available ? 'SOTUVDA' : 'YO\'Q'}
+                  </div>
                 </div>
               </div>
             </div>
+          ))
+        ) : (
+          <div className="col-span-full py-20 text-center flat-card bg-white/50 border-dashed">
+            <p className="font-black uppercase text-muted-foreground">Ushbu turkumda taomlar topilmadi.</p>
           </div>
-        ))}
+        )}
       </div>
     </div>
   );

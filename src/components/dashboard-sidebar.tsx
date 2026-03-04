@@ -1,7 +1,8 @@
+
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, 
   UtensilsCrossed, 
@@ -10,11 +11,13 @@ import {
   MessageSquare, 
   Users, 
   LogOut,
-  Utensils,
-  X
+  X,
+  Settings,
+  ShieldCheck
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/hooks/use-toast';
 
 const navItems = [
   { name: 'Boshqaruv paneli', href: '/admin', icon: LayoutDashboard },
@@ -23,6 +26,7 @@ const navItems = [
   { name: 'Buyurtmalar', href: '/admin/orders', icon: ClipboardList },
   { name: 'Fikr-mulohazalar', href: '/admin/feedback', icon: MessageSquare },
   { name: 'Mijozlar', href: '/admin/customers', icon: Users },
+  { name: 'Sozlamalar', href: '/admin/settings', icon: Settings },
 ];
 
 interface SidebarProps {
@@ -32,26 +36,33 @@ interface SidebarProps {
 
 export function DashboardSidebar({ onClose, className }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    toast({
+      title: "Chiqildi",
+      description: "Tizimdan muvaffaqiyatli chiqdingiz.",
+    });
+    router.push('/');
+  };
 
   return (
-    <div className={cn("w-64 bg-white h-full border-r border-border/40 flex flex-col z-50", className)}>
-      {/* Logo Section */}
-      <div className="p-8 flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="bg-primary p-2 rounded-2xl shadow-xl shadow-primary/20 text-white">
-            <Utensils className="h-6 w-6" />
+    <div className={cn("w-full h-full flex flex-col z-50", className)}>
+      {/* Admin Status */}
+      <div className="p-8">
+        <div className="bg-secondary/10 border-2 border-black rounded-2xl p-4 flex items-center gap-3">
+          <div className="bg-secondary p-2 border-2 border-black rounded-xl text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <ShieldCheck className="h-5 w-5" />
           </div>
-          <span className="text-xl font-black tracking-tighter text-foreground font-headline uppercase">FOODLY<span className="text-primary">KING</span></span>
+          <div>
+            <p className="text-[10px] font-black uppercase text-secondary tracking-widest">Status</p>
+            <p className="font-black text-sm uppercase">SUPER ADMIN</p>
+          </div>
         </div>
-        {onClose && (
-          <Button variant="ghost" size="icon" onClick={onClose} className="lg:hidden h-10 w-10 rounded-xl">
-            <X className="h-6 w-6" />
-          </Button>
-        )}
       </div>
 
       {/* Navigation Items */}
-      <nav className="flex-1 px-4 space-y-2">
+      <nav className="flex-1 px-4 space-y-3">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/admin');
@@ -61,25 +72,28 @@ export function DashboardSidebar({ onClose, className }: SidebarProps) {
               href={item.href}
               onClick={onClose}
               className={cn(
-                "flex items-center gap-3 px-5 py-4 rounded-2xl transition-all group",
+                "flex items-center gap-3 px-6 py-4 rounded-2xl transition-all border-2 border-transparent group uppercase font-black text-xs tracking-wider",
                 isActive 
-                  ? "bg-primary text-white font-black shadow-lg shadow-primary/20" 
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  ? "bg-primary text-white border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" 
+                  : "text-muted-foreground hover:bg-white hover:border-black hover:text-foreground"
               )}
             >
               <Icon className={cn("h-5 w-5", isActive ? "text-white" : "group-hover:text-primary transition-colors")} />
-              <span className="text-[15px]">{item.name}</span>
+              <span>{item.name}</span>
             </Link>
           );
         })}
       </nav>
 
       {/* Logout */}
-      <div className="p-6 border-t border-border/40 mt-auto">
-        <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-2xl px-5 h-14 font-bold">
+      <div className="p-6 mt-auto">
+        <button 
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-6 py-5 rounded-2xl bg-red-50 text-red-500 border-2 border-red-500 font-black text-xs uppercase tracking-wider shadow-[4px_4px_0px_0px_rgba(239,68,68,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
+        >
           <LogOut className="h-5 w-5" />
-          <span>Chiqish</span>
-        </Button>
+          <span>Tizimdan chiqish</span>
+        </button>
       </div>
     </div>
   );

@@ -6,11 +6,13 @@ import { Lock, Mail, ArrowRight, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
+import { cn } from '@/lib/utils';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -71,35 +73,53 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleLogin} className="flat-card p-10 space-y-8 bg-white">
+          {/* Email Field */}
           <div className="space-y-3">
             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">
               EMAIL MANZILINGIZ
             </label>
             <div className="relative group">
-              <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-6 w-6 text-black z-20 pointer-events-none transition-transform group-focus-within:scale-110" />
+              <div className={cn(
+                "absolute left-5 transition-all duration-300 pointer-events-none z-20 flex items-center justify-center",
+                (focusedField === 'email' || email) 
+                  ? "top-2 scale-75 -translate-x-2 text-primary" 
+                  : "top-1/2 -translate-y-1/2 text-black"
+              )}>
+                <Mail className="h-6 w-6" />
+              </div>
               <Input
                 type="email"
-                placeholder="king@foodly.uz"
                 value={email}
+                onFocus={() => setFocusedField('email')}
+                onBlur={() => setFocusedField(null)}
                 onChange={(e) => setEmail(e.target.value)}
-                className="flat-input pl-16 h-16 text-lg font-bold w-full focus:border-primary"
+                className="flat-input pl-16 h-20 text-lg font-bold w-full focus:border-primary pt-6"
                 required
               />
             </div>
           </div>
 
+          {/* Password Field */}
           <div className="space-y-3">
             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">
               MAXFIY KALIT
             </label>
             <div className="relative group">
-              <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-6 w-6 text-black z-20 pointer-events-none transition-transform group-focus-within:scale-110" />
+              <div className={cn(
+                "absolute left-5 transition-all duration-300 pointer-events-none z-20 flex items-center justify-center",
+                (focusedField === 'password' || password) 
+                  ? "top-2 scale-75 -translate-x-2 text-primary" 
+                  : "top-1/2 -translate-y-1/2 text-black"
+              )}>
+                <Lock className="h-6 w-6" />
+              </div>
               <Input
                 type="password"
-                placeholder="••••••"
                 value={password}
+                onFocus={() => setFocusedField('password')}
+                onBlur={() => setFocusedField(null)}
                 onChange={(e) => setPassword(e.target.value)}
-                className="flat-input pl-16 h-16 text-lg font-bold w-full focus:border-primary"
+                className="flat-input pl-16 h-20 text-lg font-bold w-full focus:border-primary pt-6"
                 required
               />
             </div>

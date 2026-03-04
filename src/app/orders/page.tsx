@@ -4,7 +4,6 @@ import { Navbar } from '@/components/navbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { Clock, CheckCircle2, Package, Bike, UtensilsCrossed } from 'lucide-react';
 
 export default function OrdersPage() {
@@ -50,7 +49,6 @@ export default function OrdersPage() {
             </div>
           </CardHeader>
           <CardContent className="p-8">
-            {/* Status Steps */}
             <div className="relative flex justify-between mb-12 px-2">
               <div className="absolute top-5 left-8 right-8 h-1 bg-secondary z-0" />
               <div className="absolute top-5 left-8 h-1 bg-primary transition-all duration-1000 z-0" style={{ width: '33%' }} />
@@ -113,16 +111,6 @@ export default function OrdersPage() {
               <div>
                 <p className="font-bold">Sakura Zen</p>
                 <p className="text-xs text-muted-foreground">12-Mart, 2024 • $34.50</p>
-              </div>
-            </div>
-            <Button variant="outline" size="sm" className="rounded-full">Qayta buyurtma</Button>
-          </div>
-          <div className="bg-white p-6 rounded-2xl border border-secondary flex justify-between items-center shadow-sm">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-secondary rounded-lg flex items-center justify-center font-bold text-primary">B</div>
-              <div>
-                <p className="font-bold">Bella Pizza</p>
-                <p className="text-xs text-muted-foreground">08-Mart, 2024 • $22.10</p>
               </div>
             </div>
             <Button variant="outline" size="sm" className="rounded-full">Qayta buyurtma</Button>

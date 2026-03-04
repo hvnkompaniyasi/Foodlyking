@@ -1,10 +1,11 @@
-# Foodly King - Boshqaruv Paneli
 
-Ushbu loyiha Foodly King onlayn taom yetkazib berish xizmati uchun maxsus ishlab chiqilgan professional boshqaruv panelidir.
+# Foodly King - Maxfiy Boshqaruv Paneli
+
+Ushbu loyiha Foodly King tizimi uchun maxsus 2D Flat (Neo-brutalist) uslubida yaratilgan maxfiy portaldir.
 
 ## GitHub-ga yuklash (Main branch)
 
-Ushbu buyruqlarni **Terminal**ga ketma-ket nusxalab tashlang va Enter bosing:
+Ushbu buyruqlarni Firebase Studio **Terminal** oynasiga ketma-ket nusxalab tashlang va har biridan keyin Enter bosing:
 
 ```bash
 # 1. Git-ni ishga tushirish
@@ -14,27 +15,28 @@ git init
 git add .
 
 # 3. Birinchi commit-ni amalga oshirish
-git commit -m "Initial commit: Foodly King Dashboard O'zbek tilida"
+git commit -m "Initial commit: Foodly King Maxfiy Dashboard"
 
 # 4. Branch-ni 'main' deb nomlash
 git branch -M main
 
-# 5. Masofaviy omborxonani ulash
+# 5. Masofaviy omborxonani (GitHub) ulash
 git remote add origin https://github.com/hvnkompaniyasi/Foodlyking.git
 
-# 6. GitHub-ga yuklash
+# 6. Kodni GitHub-ga yuklash
 git push -u origin main
 ```
 
-## Kelajakdagi yangilanishlarni yuklash
-Kodni o'zgartirganingizda va uni GitHub-ga yangilamoqchi bo'lsangiz:
+## Keyingi yangilanishlarni yuklash
+Kodni o'zgartirganingizda va uni GitHub-ga yangilamoqchi bo'lsangiz, faqat shu 3 ta buyruq kifoya:
 1. `git add .`
 2. `git commit -m "Yangilanish tavsifi"`
 3. `git push origin main`
 
-## Texnologiyalar
-- Next.js 15 (App Router)
-- Tailwind CSS (Responsiv dizayn)
-- Shadcn UI (Komponentlar)
-- Lucide Icons (Ikonkalar)
-- Genkit AI (Tavsiyalar uchun)
+## Texnologiyalar va Xususiyatlar
+- **Framework:** Next.js 15 (App Router)
+- **Dizayn:** 2D Flat / Neo-brutalist Design
+- **Ranglar:** To'q sariq (#E0701C), Feruza (#30D5C8), Oq
+- **Til:** To'liq O'zbek tilida
+- **Responsive:** PC, Planshet va Mobil qurilmalarga 100% moslashgan
+- **Xavfsizlik:** Maxfiy kirish portali (Auth)

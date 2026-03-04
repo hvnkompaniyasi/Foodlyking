@@ -4,38 +4,37 @@ Ushbu loyiha Foodly King onlayn taom yetkazib berish xizmati uchun maxsus ishlab
 
 ## GitHub-ga yuklash (Main branch)
 
-Loyihani o'zingizning GitHub omborxonangizga yuklash uchun terminalda quyidagi buyruqlarni bajaring:
+Ushbu buyruqlarni **Terminal**ga ketma-ket nusxalab tashlang va Enter bosing:
 
 ```bash
-# Git-ni ishga tushirish
+# 1. Git-ni ishga tushirish
 git init
 
-# Barcha fayllarni qo'shish
+# 2. Barcha fayllarni qo'shish
 git add .
 
-# Birinchi commit-ni amalga oshirish
-git commit -m "Initial commit: Foodly King Dashboard"
+# 3. Birinchi commit-ni amalga oshirish
+git commit -m "Initial commit: Foodly King Dashboard O'zbek tilida"
 
-# Branch-ni 'main' deb nomlash
+# 4. Branch-ni 'main' deb nomlash
 git branch -M main
 
-# Masofaviy omborxonani ulash
+# 5. Masofaviy omborxonani ulash (Sizning havolangiz)
 git remote add origin https://github.com/hvnkompaniyasi/Foodlyking.git
 
-# GitHub-ga yuklash
+# 6. GitHub-ga yuklash
 git push -u origin main
 ```
 
 ## Kelajakdagi yangilanishlarni yuklash
-
-Har gal kodni o'zgartirganingizda va uni GitHub-ga yangilamoqchi bo'lsangiz:
+Kodni o'zgartirganingizda va uni GitHub-ga yangilamoqchi bo'lsangiz:
 1. `git add .`
 2. `git commit -m "Yangilanish tavsifi"`
 3. `git push origin main`
 
 ## Texnologiyalar
-- Next.js 15
-- Tailwind CSS
-- Shadcn UI
-- Lucide Icons
+- Next.js 15 (App Router)
+- Tailwind CSS (Responsiv dizayn)
+- Shadcn UI (Komponentlar)
+- Lucide Icons (Ikonkalar)
 - Genkit AI (Tavsiyalar uchun)

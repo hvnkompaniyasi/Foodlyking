@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -76,14 +75,14 @@ export default function LoginPage() {
             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">
               EMAIL MANZILINGIZ
             </label>
-            <div className="relative flex items-center">
-              <Mail className="absolute left-5 h-6 w-6 text-black z-10" />
+            <div className="relative group">
+              <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-6 w-6 text-black z-10 transition-transform group-focus-within:scale-110" />
               <Input
                 type="email"
                 placeholder="king@foodly.uz"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="flat-input pl-16 h-16 text-lg font-bold w-full"
+                className="flat-input pl-16 h-16 text-lg font-bold w-full focus:border-primary"
                 required
               />
             </div>
@@ -93,14 +92,14 @@ export default function LoginPage() {
             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">
               MAXFIY KALIT
             </label>
-            <div className="relative flex items-center">
-              <Lock className="absolute left-5 h-6 w-6 text-black z-10" />
+            <div className="relative group">
+              <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-6 w-6 text-black z-10 transition-transform group-focus-within:scale-110" />
               <Input
                 type="password"
                 placeholder="••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="flat-input pl-16 h-16 text-lg font-bold w-full"
+                className="flat-input pl-16 h-16 text-lg font-bold w-full focus:border-primary"
                 required
               />
             </div>

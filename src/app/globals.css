@@ -4,47 +4,26 @@
 
 @layer base {
   :root {
-    --background: 30 20% 96%; /* #F7F3EF */
+    --background: 0 0% 98%;
     --foreground: 24 10% 10%;
     --card: 0 0% 100%;
     --card-foreground: 24 10% 10%;
     --popover: 0 0% 100%;
     --popover-foreground: 24 10% 10%;
-    --primary: 25 78% 49%; /* #E0701C Burnt Orange */
+    --primary: 25 100% 50%; /* Orange from image */
     --primary-foreground: 0 0% 100%;
-    --secondary: 30 15% 90%;
-    --secondary-foreground: 25 78% 49%;
-    --muted: 30 10% 90%;
-    --muted-foreground: 24 10% 40%;
-    --accent: 355 80% 40%; /* #B81425 Crimson */
+    --secondary: 210 20% 98%;
+    --secondary-foreground: 25 100% 50%;
+    --muted: 210 20% 95%;
+    --muted-foreground: 24 10% 45%;
+    --accent: 25 100% 50%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 30 10% 85%;
-    --input: 30 10% 85%;
-    --ring: 25 78% 49%;
-    --radius: 0.75rem;
-  }
-  .dark {
-    --background: 24 10% 5%;
-    --foreground: 0 0% 98%;
-    --card: 24 10% 7%;
-    --card-foreground: 0 0% 98%;
-    --popover: 24 10% 7%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 25 78% 49%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 24 10% 15%;
-    --secondary-foreground: 25 78% 49%;
-    --muted: 24 10% 15%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 355 80% 40%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 24 10% 20%;
-    --input: 24 10% 20%;
-    --ring: 25 78% 49%;
+    --border: 210 20% 90%;
+    --input: 210 20% 90%;
+    --ring: 25 100% 50%;
+    --radius: 1rem;
   }
 }
 
@@ -58,4 +37,12 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-headline;
   }
+}
+
+.dashboard-shadow {
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+}
+
+.active-nav-item {
+  @apply bg-primary/10 text-primary border-r-4 border-primary font-bold;
 }

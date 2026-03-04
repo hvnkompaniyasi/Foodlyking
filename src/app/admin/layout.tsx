@@ -1,32 +1,66 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { DashboardSidebar } from '@/components/dashboard-sidebar';
 import { Navbar } from '@/components/navbar';
-import { Menu } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { supabase } from '@/lib/supabase';
+import { Loader2 } from 'lucide-react';
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        router.push('/');
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+
+      if (profile?.role !== 'king') {
+        await supabase.auth.signOut();
+        router.push('/');
+        return;
+      }
+
+      setLoading(false);
+    };
+
+    checkAuth();
+  }, [router]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#F8F9FA]">
+        <Loader2 className="h-12 w-12 text-primary animate-spin mb-4" />
+        <p className="font-black uppercase tracking-widest text-xs">Xavfsiz ulanish tekshirilmoqda...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
-      {/* Top Navbar */}
       <Navbar />
       
       <div className="flex flex-1">
-        {/* Desktop Sidebar */}
         <aside className="hidden lg:block w-72 sticky top-20 h-[calc(100vh-5rem)] border-r-4 border-black bg-white overflow-y-auto">
           <DashboardSidebar />
         </aside>
 
-        {/* Main Content */}
         <main className="flex-1 min-h-screen bg-[#F8F9FA]">
           <div className="p-4 md:p-10 max-w-7xl mx-auto">
             {children}

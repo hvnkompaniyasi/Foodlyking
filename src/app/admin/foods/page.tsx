@@ -1,12 +1,11 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Search, Plus, Star, Pencil, Trash2, Clock, Image as ImageIcon, CheckCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Search, Plus, Pencil, Trash2, Clock, Image as ImageIcon, CheckCircle, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { RESTAURANTS } from '@/lib/mock-data';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import {
   Dialog,
@@ -18,19 +17,47 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { supabase } from '@/lib/supabase';
+import { toast } from '@/hooks/use-toast';
 
 export default function AdminFoodsPage() {
+  const [foods, setFoods] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('Barchasi');
   const [searchQuery, setSearchQuery] = useState('');
   
-  const allDishes = RESTAURANTS.flatMap(r => r.menu.map(d => ({ ...d, restaurantName: r.name })));
-  const categories = ['Barchasi', 'Burgers', 'Pizza', 'Sushi', 'Ramen', 'Sides', 'Dessert'];
+  // Ma'lumotlarni yuklash
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  const filteredDishes = allDishes.filter(dish => {
-    const matchesCategory = activeCategory === 'Barchasi' || dish.category === activeCategory;
-    const matchesSearch = dish.name.toLowerCase().includes(searchQuery.toLowerCase());
+  const fetchData = async () => {
+    setLoading(true);
+    const [foodsRes, catsRes] = await Promise.all([
+      supabase.from('foods').select('*, categories(name)'),
+      supabase.from('categories').select('*')
+    ]);
+
+    if (foodsRes.data) setFoods(foodsRes.data);
+    if (catsRes.data) setCategories(catsRes.data);
+    setLoading(false);
+  };
+
+  const filteredFoods = foods.filter(food => {
+    const matchesCategory = activeCategory === 'Barchasi' || food.categories?.name === activeCategory;
+    const matchesSearch = food.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <Loader2 className="h-10 w-10 text-primary animate-spin mb-4" />
+        <p className="font-black uppercase text-xs">Taomlar ro'yxati yuklanmoqda...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-10">
@@ -57,21 +84,19 @@ export default function AdminFoodsPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="price" className="font-black text-xs uppercase tracking-widest">Narxi ($)</Label>
-                  <Input id="price" type="number" placeholder="12.99" className="flat-input h-12 font-bold" />
+                  <Label htmlFor="price" className="font-black text-xs uppercase tracking-widest">Narxi (so'm)</Label>
+                  <Input id="price" type="number" placeholder="45000" className="flat-input h-12 font-bold" />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="category" className="font-black text-xs uppercase tracking-widest">Kategoriya</Label>
-                  <Input id="category" placeholder="Burgers" className="flat-input h-12 font-bold" />
+                  <select className="flat-input h-12 font-bold">
+                    {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
                 </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="description" className="font-black text-xs uppercase tracking-widest">Tavsifi</Label>
                 <Textarea id="description" placeholder="Mahsulot tarkibi va ma'lumotlar..." className="flat-input min-h-[100px] font-bold" />
-              </div>
-              <div className="border-4 border-dashed border-black rounded-2xl p-10 text-center bg-muted/20 hover:bg-muted/40 cursor-pointer transition-all">
-                <ImageIcon className="h-12 w-12 mx-auto mb-3 text-primary" />
-                <span className="font-black text-xs text-black uppercase tracking-widest">RASM YUKLASH (JPG, PNG)</span>
               </div>
             </div>
             <DialogFooter>
@@ -95,38 +120,50 @@ export default function AdminFoodsPage() {
         </div>
 
         <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar">
+          <button
+            onClick={() => setActiveCategory('Barchasi')}
+            className={cn(
+              "px-8 py-3 rounded-xl text-xs font-black border-2 border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase tracking-wider whitespace-nowrap active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
+              activeCategory === 'Barchasi' 
+                ? "bg-secondary text-white" 
+                : "bg-white text-muted-foreground hover:bg-muted"
+            )}
+          >
+            Barchasi
+          </button>
           {categories.map((cat) => (
             <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.name)}
               className={cn(
                 "px-8 py-3 rounded-xl text-xs font-black border-2 border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase tracking-wider whitespace-nowrap active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
-                activeCategory === cat 
+                activeCategory === cat.name 
                   ? "bg-secondary text-white" 
                   : "bg-white text-muted-foreground hover:bg-muted"
               )}
             >
-              {cat}
+              {cat.name}
             </button>
           ))}
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-        {filteredDishes.map((dish) => (
+        {filteredFoods.map((dish) => (
           <div key={dish.id} className="flat-card overflow-hidden group bg-white">
-            <div className="relative h-64 border-b-2 border-black overflow-hidden">
-              <Image 
-                src={dish.image} 
-                alt={dish.name} 
-                fill 
-                className="object-cover group-hover:scale-110 transition-transform duration-700" 
-              />
+            <div className="relative h-64 border-b-2 border-black overflow-hidden bg-muted flex items-center justify-center">
+              {dish.image_url ? (
+                <Image 
+                  src={dish.image_url} 
+                  alt={dish.name} 
+                  fill 
+                  className="object-cover group-hover:scale-110 transition-transform duration-700" 
+                />
+              ) : (
+                <ImageIcon className="h-12 w-12 text-muted-foreground opacity-20" />
+              )}
               <div className="absolute top-4 left-4 bg-primary text-white border-2 border-black px-5 py-2 rounded-xl font-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] text-lg">
-                ${dish.price.toFixed(2)}
-              </div>
-              <div className="absolute bottom-4 right-4 bg-white border-2 border-black px-3 py-1 rounded-lg font-black text-[10px] uppercase tracking-tighter">
-                {dish.restaurantName}
+                {dish.price.toLocaleString()} so'm
               </div>
             </div>
             
@@ -135,7 +172,7 @@ export default function AdminFoodsPage() {
                 <div>
                   <h3 className="text-2xl font-black uppercase tracking-tighter mb-1 leading-none">{dish.name}</h3>
                   <Badge className="bg-secondary/10 text-secondary border-none font-black text-[10px] uppercase tracking-widest px-0">
-                    {dish.category}
+                    {dish.categories?.name}
                   </Badge>
                 </div>
                 <div className="flex gap-2">
@@ -154,10 +191,10 @@ export default function AdminFoodsPage() {
 
               <div className="flex justify-between items-center pt-5 border-t-2 border-black border-dashed font-black text-[10px] uppercase tracking-widest">
                 <div className="flex items-center gap-2 text-primary">
-                  <Clock className="h-4 w-4" /> 15-20 DAQ
+                  <Clock className="h-4 w-4" /> {dish.preparation_time || '15-20'} DAQ
                 </div>
                 <div className="flex items-center gap-1.5 text-green-600">
-                  <CheckCircle className="h-4 w-4" /> FAOL
+                  <CheckCircle className="h-4 w-4" /> {dish.is_available ? 'SOTUVDA' : 'YO\'Q'}
                 </div>
               </div>
             </div>

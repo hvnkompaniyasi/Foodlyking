@@ -11,20 +11,18 @@ import {
   MessageSquare, 
   Users, 
   LogOut,
-  X,
   Settings,
   ShieldCheck
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
 
 const navItems = [
   { name: 'Boshqaruv paneli', href: '/admin', icon: LayoutDashboard },
   { name: 'Taomlar', href: '/admin/foods', icon: UtensilsCrossed },
   { name: 'Kategoriyalar', href: '/admin/categories', icon: Layers },
   { name: 'Buyurtmalar', href: '/admin/orders', icon: ClipboardList },
-  { name: 'Fikr-mulohazalar', href: '/admin/feedback', icon: MessageSquare },
   { name: 'Mijozlar', href: '/admin/customers', icon: Users },
   { name: 'Sozlamalar', href: '/admin/settings', icon: Settings },
 ];
@@ -38,7 +36,8 @@ export function DashboardSidebar({ onClose, className }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     toast({
       title: "Chiqildi",
       description: "Tizimdan muvaffaqiyatli chiqdingiz.",
@@ -48,7 +47,6 @@ export function DashboardSidebar({ onClose, className }: SidebarProps) {
 
   return (
     <div className={cn("w-full h-full flex flex-col z-50", className)}>
-      {/* Admin Status */}
       <div className="p-8">
         <div className="bg-secondary/10 border-2 border-black rounded-2xl p-4 flex items-center gap-3">
           <div className="bg-secondary p-2 border-2 border-black rounded-xl text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
@@ -56,12 +54,11 @@ export function DashboardSidebar({ onClose, className }: SidebarProps) {
           </div>
           <div>
             <p className="text-[10px] font-black uppercase text-secondary tracking-widest">Status</p>
-            <p className="font-black text-sm uppercase">SUPER ADMIN</p>
+            <p className="font-black text-sm uppercase">KING ADMIN</p>
           </div>
         </div>
       </div>
 
-      {/* Navigation Items */}
       <nav className="flex-1 px-4 space-y-3">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -85,7 +82,6 @@ export function DashboardSidebar({ onClose, className }: SidebarProps) {
         })}
       </nav>
 
-      {/* Logout */}
       <div className="p-6 mt-auto">
         <button 
           onClick={handleLogout}

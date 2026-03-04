@@ -35,6 +35,7 @@ export function DashboardSidebar({ onClose, className }: SidebarProps) {
 
   return (
     <div className={cn("w-64 bg-white h-full border-r flex flex-col z-50", className)}>
+      {/* Logo Section */}
       <div className="p-6 flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
           <div className="bg-primary p-2 rounded-2xl shadow-lg shadow-primary/30 text-white">
@@ -49,6 +50,7 @@ export function DashboardSidebar({ onClose, className }: SidebarProps) {
         )}
       </div>
 
+      {/* Navigation Items */}
       <nav className="flex-1 px-4 space-y-1">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -72,6 +74,7 @@ export function DashboardSidebar({ onClose, className }: SidebarProps) {
         })}
       </nav>
 
+      {/* Logout - Always on the bottom left side */}
       <div className="p-4 border-t mt-auto">
         <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-2xl px-4 h-12">
           <LogOut className="h-5 w-5" />

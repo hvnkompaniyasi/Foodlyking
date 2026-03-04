@@ -19,7 +19,7 @@ git commit -m "Initial commit: Foodly King Dashboard O'zbek tilida"
 # 4. Branch-ni 'main' deb nomlash
 git branch -M main
 
-# 5. Masofaviy omborxonani ulash (Sizning havolangiz)
+# 5. Masofaviy omborxonani ulash
 git remote add origin https://github.com/hvnkompaniyasi/Foodlyking.git
 
 # 6. GitHub-ga yuklash

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Lock, User, ArrowRight, ShieldAlert, Loader2 } from 'lucide-react';
+import { Lock, User, ArrowRight, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
@@ -18,7 +18,6 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // 1. Supabase Auth orqali kirish
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -26,7 +25,6 @@ export default function LoginPage() {
 
       if (authError) throw authError;
 
-      // 2. Profiles jadvalidan foydalanuvchi rolini tekshirish
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('role')
@@ -35,7 +33,6 @@ export default function LoginPage() {
 
       if (profileError) throw profileError;
 
-      // 3. Faqat 'king' bo'lsa ruxsat berish
       if (profile?.role === 'king') {
         toast({
           title: "Xush kelibsiz, Qirol!",
@@ -43,7 +40,6 @@ export default function LoginPage() {
         });
         router.push('/admin');
       } else {
-        // Agar rol mos kelmasa, sessiyani yopish
         await supabase.auth.signOut();
         toast({
           variant: "destructive",
@@ -66,9 +62,6 @@ export default function LoginPage() {
     <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center bg-primary p-5 border-4 border-black rounded-[2.5rem] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-white mb-6 animate-bounce">
-            <ShieldAlert className="h-12 w-12" />
-          </div>
           <h1 className="text-5xl font-black uppercase tracking-tighter leading-none">
             FOODLY<span className="text-primary">KING</span>
           </h1>
@@ -120,10 +113,6 @@ export default function LoginPage() {
             {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <>KIRISH <ArrowRight className="h-6 w-6" /></>}
           </button>
         </form>
-
-        <p className="text-center mt-10 text-[10px] font-black text-muted-foreground uppercase tracking-widest opacity-50">
-          © 2024 FOODLY KING CORP. BARCHA HUQUQLAR MAXFIY.
-        </p>
       </div>
     </div>
   );

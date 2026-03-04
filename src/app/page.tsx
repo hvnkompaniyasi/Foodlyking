@@ -61,45 +61,45 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="text-center mb-10">
-          <h1 className="text-5xl font-black uppercase tracking-tighter leading-none">
+        <div className="text-center mb-12">
+          <h1 className="text-6xl font-black uppercase tracking-tighter leading-none">
             FOODLY<span className="text-primary">KING</span>
           </h1>
-          <div className="mt-4 inline-block bg-secondary text-white px-4 py-1 border-2 border-black font-black text-[10px] uppercase tracking-[0.2em] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            MAXFIY BOSHQARUV PORTALI
+          <div className="mt-4 inline-block bg-secondary text-white px-6 py-2 border-4 border-black font-black text-xs uppercase tracking-[0.2em] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+            MAXFIY PORTAL
           </div>
         </div>
 
         <form onSubmit={handleLogin} className="flat-card p-10 space-y-8 bg-white">
           <div className="space-y-3">
-            <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">
-              Email manzilingiz
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">
+              EMAIL MANZIL
             </label>
             <div className="relative">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <User className="absolute left-5 top-1/2 -translate-y-1/2 h-6 w-6 text-black" />
               <Input
                 type="email"
                 placeholder="king@foodly.uz"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="flat-input pl-12 h-16 text-lg font-bold"
+                className="flat-input pl-14 h-16 text-lg font-bold"
                 required
               />
             </div>
           </div>
 
           <div className="space-y-3">
-            <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">
-              Maxfiy kalit
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">
+              MAXFIY KALIT
             </label>
             <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-6 w-6 text-black" />
               <Input
                 type="password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="flat-input pl-12 h-16 text-lg font-bold"
+                className="flat-input pl-14 h-16 text-lg font-bold"
                 required
               />
             </div>
@@ -108,9 +108,9 @@ export default function LoginPage() {
           <button 
             type="submit" 
             disabled={loading}
-            className="flat-button-primary w-full h-16 text-xl flex items-center justify-center gap-3 disabled:opacity-70"
+            className="flat-button-primary w-full h-20 text-2xl flex items-center justify-center gap-4 disabled:opacity-70 mt-4"
           >
-            {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <>KIRISH <ArrowRight className="h-6 w-6" /></>}
+            {loading ? <Loader2 className="h-8 w-8 animate-spin" /> : <>KIRISH <ArrowRight className="h-8 w-8" /></>}
           </button>
         </form>
       </div>

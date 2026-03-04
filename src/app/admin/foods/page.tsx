@@ -2,19 +2,27 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Search, Plus, Star, Pencil, Trash2, Clock, SlidersHorizontal } from 'lucide-react';
+import { Search, Plus, Star, Pencil, Trash2, Clock, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { RESTAURANTS } from '@/lib/mock-data';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function AdminFoodsPage() {
   const [activeCategory, setActiveCategory] = useState('Barchasi');
   const [searchQuery, setSearchQuery] = useState('');
   
   const allDishes = RESTAURANTS.flatMap(r => r.menu.map(d => ({ ...d, restaurantName: r.name })));
-  
   const categories = ['Barchasi', 'Burgers', 'Pizza', 'Sushi', 'Ramen', 'Sides', 'Dessert'];
 
   const filteredDishes = allDishes.filter(dish => {
@@ -24,120 +32,129 @@ export default function AdminFoodsPage() {
   });
 
   return (
-    <div className="space-y-6 md:space-y-10">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="space-y-10">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold font-headline flex items-center gap-2">
-            Taomlar boshqaruvi <span role="img" aria-label="burger">🍔</span>
-          </h1>
-          <p className="text-muted-foreground text-sm mt-1">Menyudagi barcha taomlarni ko'rish va tahrirlash</p>
+          <h1 className="text-4xl font-black uppercase tracking-tight">Taomlar <span className="text-primary">Menyusi</span></h1>
+          <p className="text-muted-foreground font-medium mt-1">Barcha mahsulotlarni tahrirlang va yangilarini qo'shing</p>
         </div>
-        <Button className="w-full sm:w-auto bg-primary hover:bg-primary/90 rounded-2xl h-12 px-6 font-bold shadow-lg shadow-primary/20">
-          <Plus className="mr-2 h-5 w-5" /> Yangi Taom Qo'shish
-        </Button>
+        
+        <Dialog>
+          <DialogTrigger asChild>
+            <button className="flat-button-primary flex items-center gap-2">
+              <Plus className="h-6 w-6" /> Yangi Taom Qo'shish
+            </button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[525px] border-4 border-black rounded-[2rem] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-black uppercase">Yangi mahsulot</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-6 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="name" className="font-black text-sm uppercase">Taom nomi</Label>
+                <Input id="name" placeholder="Masalan: King Burger" className="flat-input h-12" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="price" className="font-black text-sm uppercase">Narxi ($)</Label>
+                  <Input id="price" type="number" placeholder="12.99" className="flat-input h-12" />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="category" className="font-black text-sm uppercase">Kategoriya</Label>
+                  <Input id="category" placeholder="Burgers" className="flat-input h-12" />
+                </div>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="description" className="font-black text-sm uppercase">Tavsifi</Label>
+                <Textarea id="description" placeholder="Mahsulot haqida ma'lumot..." className="flat-input min-h-[100px]" />
+              </div>
+              <div className="border-2 border-dashed border-black rounded-xl p-8 text-center bg-muted/20 hover:bg-muted/40 cursor-pointer transition-all">
+                <ImageIcon className="h-10 w-10 mx-auto mb-2 text-muted-foreground" />
+                <span className="font-black text-sm text-muted-foreground">RASM YUKLASH</span>
+              </div>
+            </div>
+            <DialogFooter>
+              <button className="flat-button-primary w-full">SAQLASH</button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
-      {/* Filters & Search */}
-      <div className="space-y-4">
-        <div className="flex flex-col md:flex-row gap-4">
+      <div className="space-y-6">
+        <div className="flex flex-col md:flex-row gap-6">
           <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-6 w-6 text-muted-foreground" />
             <Input 
-              placeholder="Taom nomini qidiring..." 
+              placeholder="Qidiruv..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 h-14 bg-white border-none shadow-sm rounded-2xl text-lg focus-visible:ring-primary"
+              className="flat-input pl-14 h-16 text-lg"
             />
           </div>
-          <Button variant="outline" className="h-14 rounded-2xl border-none shadow-sm bg-white md:w-auto px-6">
-            <SlidersHorizontal className="mr-2 h-5 w-5" /> Filtrlar
-          </Button>
         </div>
 
-        {/* Category Horizontal Scroll */}
-        <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
               className={cn(
-                "px-6 py-3 rounded-2xl text-sm font-bold transition-all shadow-sm whitespace-nowrap border border-transparent flex-shrink-0",
+                "px-8 py-3 rounded-xl text-sm font-black border-2 border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] whitespace-nowrap active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
                 activeCategory === cat 
-                  ? "bg-primary text-white shadow-primary/30" 
-                  : "bg-white text-muted-foreground hover:bg-secondary border-secondary"
+                  ? "bg-secondary text-white" 
+                  : "bg-white text-muted-foreground hover:bg-muted"
               )}
             >
-              {cat}
+              {cat.toUpperCase()}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Grid - Responsive grid columns */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8">
-        {filteredDishes.length > 0 ? (
-          filteredDishes.map((dish) => (
-            <div key={dish.id} className="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-secondary group">
-              <div className="relative h-48 md:h-56">
-                <Image 
-                  src={dish.image} 
-                  alt={dish.name} 
-                  fill 
-                  className="object-cover group-hover:scale-105 transition-transform duration-500" 
-                />
-                <div className="absolute top-4 left-4 bg-white/95 text-primary px-4 py-1.5 rounded-full font-bold text-sm shadow-md">
-                  ${dish.price.toFixed(2)}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {filteredDishes.map((dish) => (
+          <div key={dish.id} className="flat-card overflow-hidden group">
+            <div className="relative h-56 border-b-2 border-black">
+              <Image 
+                src={dish.image} 
+                alt={dish.name} 
+                fill 
+                className="object-cover group-hover:scale-105 transition-transform duration-500" 
+              />
+              <div className="absolute top-4 left-4 bg-primary text-white border-2 border-black px-4 py-2 rounded-xl font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                ${dish.price.toFixed(2)}
+              </div>
+            </div>
+            
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <h3 className="text-xl font-black uppercase mb-1">{dish.name}</h3>
+                  <span className="text-xs font-black text-secondary uppercase tracking-widest">{dish.category}</span>
                 </div>
-                <div className="absolute top-4 right-4 bg-white/95 px-2 py-1 rounded-lg flex items-center gap-1 shadow-md">
-                  <Star className="h-3 w-3 fill-[#FFD700] text-[#FFD700]" />
-                  <span className="text-[10px] font-bold">4.8</span>
+                <div className="flex gap-2">
+                  <button className="h-10 w-10 border-2 border-black rounded-xl bg-white flex items-center justify-center hover:bg-muted transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[1px] active:translate-y-[1px]">
+                    <Pencil className="h-4 w-4" />
+                  </button>
+                  <button className="h-10 w-10 border-2 border-black rounded-xl bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[1px] active:translate-y-[1px]">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
               
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="text-lg font-bold font-headline mb-1 line-clamp-1">{dish.name}</h3>
-                    <Badge variant="secondary" className="text-[10px] font-bold text-primary uppercase tracking-wider rounded-lg px-2 py-0">
-                      {dish.category}
-                    </Badge>
-                  </div>
-                  <div className="flex gap-2">
-                    <button className="h-9 w-9 rounded-xl bg-secondary flex items-center justify-center text-muted-foreground hover:text-primary transition-colors border border-border/50">
-                      <Pencil className="h-4 w-4" />
-                    </button>
-                    <button className="h-9 w-9 rounded-xl bg-secondary flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors border border-border/50">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-                
-                <p className="text-muted-foreground text-sm line-clamp-2 mb-6 h-10 leading-relaxed">
-                  {dish.description}
-                </p>
+              <p className="text-muted-foreground font-medium text-sm line-clamp-2 mb-6">
+                {dish.description}
+              </p>
 
-                <div className="flex justify-between items-center pt-4 border-t border-secondary text-[11px] font-bold text-muted-foreground uppercase tracking-tight">
-                  <div className="flex items-center gap-1.5">
-                    <Clock className="h-3.5 w-3.5 text-primary" />
-                    15-20 DAQ
-                  </div>
-                  <div className="flex items-center gap-1.5 text-green-600">
-                    SOTUVDA BOR
-                  </div>
+              <div className="flex justify-between items-center pt-4 border-t-2 border-black border-dashed font-black text-xs uppercase">
+                <div className="flex items-center gap-1.5 text-primary">
+                  <Clock className="h-4 w-4" /> 15-20 DAQ
                 </div>
+                <div className="text-green-600">SOTUVDA</div>
               </div>
             </div>
-          ))
-        ) : (
-          <div className="col-span-full py-20 text-center">
-            <div className="bg-secondary/50 rounded-full h-20 w-20 flex items-center justify-center mx-auto mb-4">
-              <Search className="h-10 w-10 text-muted-foreground" />
-            </div>
-            <h3 className="text-xl font-bold">Hech narsa topilmadi</h3>
-            <p className="text-muted-foreground">Qidiruv so'rovini yoki filtrni o'zgartirib ko'ring</p>
           </div>
-        )}
+        ))}
       </div>
     </div>
   );

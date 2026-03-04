@@ -3,26 +3,15 @@
 import { useState } from 'react';
 import { 
   Search, 
-  Filter, 
-  ChevronRight, 
   Package, 
   Clock, 
-  CheckCircle2, 
-  XCircle, 
-  MoreHorizontal,
-  ExternalLink
+  Filter,
+  CheckCircle2,
+  XCircle,
+  Truck
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { cn } from '@/lib/utils';
 
 type OrderStatus = 'Yangi' | 'Olingan' | 'Yetkazilgan' | 'Bekor qilingan';
@@ -45,33 +34,43 @@ export default function AdminOrdersPage() {
     return matchesStatus && matchesSearch;
   });
 
-  const getStatusBadge = (status: string) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'Yangi': return <Badge className="bg-primary text-white font-bold rounded-lg border-none">YANGI</Badge>;
-      case 'Olingan': return <Badge className="bg-secondary text-white font-bold rounded-lg border-none">OLINGAN</Badge>;
-      case 'Yetkazilgan': return <Badge className="bg-green-500 text-white font-bold rounded-lg border-none">YETKAZILDI</Badge>;
-      case 'Bekor qilingan': return <Badge variant="destructive" className="font-bold rounded-lg border-none">BEKOR QILINDI</Badge>;
+      case 'Yangi': return <Package className="h-5 w-5" />;
+      case 'Olingan': return <Truck className="h-5 w-5" />;
+      case 'Yetkazilgan': return <CheckCircle2 className="h-5 w-5" />;
+      case 'Bekor qilingan': return <XCircle className="h-5 w-5" />;
       default: return null;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Yangi': return "bg-primary text-white";
+      case 'Olingan': return "bg-secondary text-white";
+      case 'Yetkazilgan': return "bg-green-500 text-white";
+      case 'Bekor qilingan': return "bg-red-500 text-white";
+      default: return "bg-muted text-muted-foreground";
     }
   };
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-black mb-2">Buyurtmalar boshqaruvi</h1>
-        <p className="text-muted-foreground">Mijozlardan kelib tushgan buyurtmalarni kuzatib boring</p>
+        <h1 className="text-4xl font-black mb-2 uppercase tracking-tight">Buyurtmalar <span className="text-primary">Boshqaruvi</span></h1>
+        <p className="text-muted-foreground font-medium">Barcha buyurtmalarni holatiga ko'ra kuzating</p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-        <div className="flex bg-white p-1.5 rounded-2xl border border-border w-full md:w-auto overflow-x-auto no-scrollbar">
+      <div className="flex flex-col xl:flex-row gap-6 items-start xl:items-center justify-between">
+        <div className="flex bg-white p-2 border-2 border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] w-full xl:w-auto overflow-x-auto no-scrollbar gap-2">
           {['Hammasi', 'Yangi', 'Olingan', 'Yetkazilgan', 'Bekor qilingan'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab as any)}
               className={cn(
-                "px-6 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap",
+                "px-6 py-3 rounded-xl text-sm font-black transition-all whitespace-nowrap",
                 activeTab === tab 
-                  ? "bg-primary text-white shadow-lg shadow-primary/20" 
+                  ? "bg-primary text-white" 
                   : "text-muted-foreground hover:bg-muted"
               )}
             >
@@ -80,73 +79,61 @@ export default function AdminOrdersPage() {
           ))}
         </div>
 
-        <div className="relative w-full md:w-72">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative w-full xl:w-96">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input 
-            placeholder="Mijoz yoki ID..." 
+            placeholder="Mijoz ismi yoki ID raqami..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-12 h-12 rounded-2xl border-none bg-white shadow-sm focus-visible:ring-primary"
+            className="flat-input pl-12 h-14 w-full"
           />
         </div>
       </div>
 
-      <div className="grid gap-4">
+      <div className="grid gap-6">
         {filteredOrders.length > 0 ? (
           filteredOrders.map((order) => (
-            <div key={order.id} className="bg-white p-6 rounded-[1.5rem] border border-border hover:border-primary/20 transition-all flex flex-col md:flex-row items-center justify-between gap-6 group">
-              <div className="flex items-center gap-5 w-full md:w-auto">
+            <div key={order.id} className="flat-card p-6 flex flex-col md:flex-row items-center justify-between gap-6 group">
+              <div className="flex items-center gap-6 w-full md:w-auto">
                 <div className={cn(
-                  "h-14 w-14 rounded-2xl flex items-center justify-center text-white",
-                  order.status === 'Yangi' ? "bg-primary" : order.status === 'Olingan' ? "bg-secondary" : "bg-muted text-muted-foreground"
+                  "h-16 w-16 rounded-2xl border-2 border-black flex items-center justify-center",
+                  getStatusColor(order.status)
                 )}>
-                  <Package className="h-6 w-6" />
+                  {getStatusIcon(order.status)}
                 </div>
                 <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-bold text-lg">{order.customer}</span>
-                    <span className="text-muted-foreground text-sm">#{order.id}</span>
+                  <div className="flex items-center gap-3 mb-1">
+                    <span className="font-black text-xl">{order.customer}</span>
+                    <span className="text-muted-foreground font-bold">#{order.id}</span>
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> {order.time}</span>
+                  <div className="flex items-center gap-4 text-sm font-bold text-muted-foreground">
+                    <span className="flex items-center gap-1.5"><Clock className="h-4 w-4" /> {order.time}</span>
                     <span>{order.items} ta mahsulot</span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between w-full md:w-auto md:gap-12">
-                <div className="text-center md:text-right">
-                  <div className="text-xl font-black text-primary mb-1">${order.total.toFixed(2)}</div>
-                  {getStatusBadge(order.status)}
+              <div className="flex items-center justify-between w-full md:w-auto md:gap-16 border-t md:border-t-0 pt-4 md:pt-0">
+                <div className="text-left md:text-right">
+                  <div className="text-2xl font-black text-primary mb-1">${order.total.toFixed(2)}</div>
+                  <Badge className={cn("font-black rounded-lg border-2 border-black px-3 py-1", getStatusColor(order.status))}>
+                    {order.status.toUpperCase()}
+                  </Badge>
                 </div>
                 
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" className="rounded-xl h-10 px-4 font-bold border-muted">
+                <div className="flex items-center gap-3">
+                  <button className="flat-button-secondary py-2 px-4 h-10 text-xs">
                     Batafsil
-                  </Button>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-muted">
-                        <MoreHorizontal className="h-5 w-5" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="rounded-xl">
-                      <DropdownMenuLabel>Holatni o'zgartirish</DropdownMenuLabel>
-                      <DropdownMenuItem className="text-secondary font-bold">Olingan</DropdownMenuItem>
-                      <DropdownMenuItem className="text-green-600 font-bold">Yetkazilgan</DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-destructive font-bold">Bekor qilish</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  </button>
                 </div>
               </div>
             </div>
           ))
         ) : (
-          <div className="py-20 text-center bg-white rounded-[2rem] border border-dashed border-muted-foreground/30">
-            <Package className="h-16 w-16 text-muted-foreground/20 mx-auto mb-4" />
-            <h3 className="text-xl font-bold">Buyurtmalar mavjud emas</h3>
-            <p className="text-muted-foreground">Tanlangan filtr bo'yicha hech narsa topilmadi</p>
+          <div className="py-24 text-center flat-card bg-muted/30 border-dashed">
+            <Package className="h-20 w-20 text-muted-foreground/30 mx-auto mb-4" />
+            <h3 className="text-2xl font-black">Buyurtmalar topilmadi</h3>
+            <p className="text-muted-foreground font-medium">Qidiruv natijasi bo'yicha hech qanday ma'lumot yo'q</p>
           </div>
         )}
       </div>

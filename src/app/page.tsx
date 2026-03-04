@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -29,15 +28,19 @@ export default function LoginPage() {
 
       if (authError) throw authError;
 
+      // Profiles jadvalidan rolni tekshirish
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', authData.user.id)
         .single();
 
-      if (profileError) throw profileError;
+      if (profileError || !profile) {
+        await supabase.auth.signOut();
+        throw new Error("Profil topilmadi yoki ruxsat yo'q.");
+      }
 
-      if (profile?.role === 'king') {
+      if (profile.role === 'king') {
         toast({
           title: "Xush kelibsiz, Qirol!",
           description: "Boshqaruv paneliga muvaffaqiyatli kirdingiz.",
@@ -75,11 +78,7 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleLogin} className="flat-card p-10 space-y-8 bg-white">
-          {/* Email Field */}
           <div className="space-y-3">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">
-              EMAIL MANZILINGIZ
-            </label>
             <div className="relative group">
               <div className={cn(
                 "absolute left-5 transition-all duration-300 pointer-events-none z-20 flex items-center justify-center",
@@ -102,11 +101,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Password Field */}
           <div className="space-y-3">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">
-              MAXFIY KALIT
-            </label>
             <div className="relative group">
               <div className={cn(
                 "absolute left-5 transition-all duration-300 pointer-events-none z-20 flex items-center justify-center",

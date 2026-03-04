@@ -17,28 +17,30 @@ export default function AdminLayout({
 
   useEffect(() => {
     const checkAuth = async () => {
-      // 1. Sessiyani tekshirish
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          router.push('/');
+          return;
+        }
+
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+
+        if (error || profile?.role !== 'king') {
+          await supabase.auth.signOut();
+          router.push('/');
+          return;
+        }
+
+        setLoading(false);
+      } catch (err) {
         router.push('/');
-        return;
       }
-
-      // 2. Profil va rolni tekshirish
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', session.user.id)
-        .single();
-
-      if (profile?.role !== 'king') {
-        await supabase.auth.signOut();
-        router.push('/');
-        return;
-      }
-
-      setLoading(false);
     };
 
     checkAuth();

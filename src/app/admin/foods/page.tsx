@@ -25,8 +25,17 @@ export default function AdminFoodsPage() {
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('Barchasi');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Form states
+  const [formData, setFormData] = useState({
+    name: '',
+    price: '',
+    category_id: '',
+    description: '',
+    preparation_time: '',
+    image_url: ''
+  });
   
-  // Ma'lumotlarni yuklash
   useEffect(() => {
     fetchData();
   }, []);
@@ -44,6 +53,10 @@ export default function AdminFoodsPage() {
 
       setFoods(foodsRes.data || []);
       setCategories(catsRes.data || []);
+      
+      if (catsRes.data && catsRes.data.length > 0) {
+        setFormData(prev => ({ ...prev, category_id: catsRes.data[0].id }));
+      }
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -52,6 +65,28 @@ export default function AdminFoodsPage() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAddFood = async () => {
+    try {
+      const { error } = await supabase
+        .from('foods')
+        .insert([{
+          name: formData.name,
+          price: parseInt(formData.price),
+          category_id: formData.category_id,
+          description: formData.description,
+          preparation_time: formData.preparation_time,
+          image_url: formData.image_url || null
+        }]);
+
+      if (error) throw error;
+
+      toast({ title: "Muvaffaqiyatli", description: "Yangi taom qo'shildi." });
+      fetchData();
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Xatolik", description: error.message });
     }
   };
 
@@ -90,28 +125,57 @@ export default function AdminFoodsPage() {
             </DialogHeader>
             <div className="grid gap-6 py-4">
               <div className="grid gap-2">
-                <Label htmlFor="name" className="font-black text-xs uppercase tracking-widest">Taom nomi</Label>
-                <Input id="name" placeholder="Masalan: King Burger" className="flat-input h-12 font-bold" />
+                <Label className="font-black text-xs uppercase tracking-widest">Taom nomi</Label>
+                <Input 
+                  value={formData.name}
+                  onChange={e => setFormData({...formData, name: e.target.value})}
+                  placeholder="Masalan: King Burger" 
+                  className="flat-input h-12 font-bold" 
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="price" className="font-black text-xs uppercase tracking-widest">Narxi (so'm)</Label>
-                  <Input id="price" type="number" placeholder="45000" className="flat-input h-12 font-bold" />
+                  <Label className="font-black text-xs uppercase tracking-widest">Narxi (so'm)</Label>
+                  <Input 
+                    type="number" 
+                    value={formData.price}
+                    onChange={e => setFormData({...formData, price: e.target.value})}
+                    placeholder="45000" 
+                    className="flat-input h-12 font-bold" 
+                  />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="category" className="font-black text-xs uppercase tracking-widest">Kategoriya</Label>
-                  <select className="flat-input h-12 font-bold">
+                  <Label className="font-black text-xs uppercase tracking-widest">Kategoriya</Label>
+                  <select 
+                    value={formData.category_id}
+                    onChange={e => setFormData({...formData, category_id: e.target.value})}
+                    className="flat-input h-12 font-bold"
+                  >
                     {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
                 </div>
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="description" className="font-black text-xs uppercase tracking-widest">Tavsifi</Label>
-                <Textarea id="description" placeholder="Mahsulot tarkibi va ma'lumotlar..." className="flat-input min-h-[100px] font-bold" />
+                <Label className="font-black text-xs uppercase tracking-widest">Tayyorlanish vaqti (daq)</Label>
+                <Input 
+                  value={formData.preparation_time}
+                  onChange={e => setFormData({...formData, preparation_time: e.target.value})}
+                  placeholder="15-20" 
+                  className="flat-input h-12 font-bold" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label className="font-black text-xs uppercase tracking-widest">Tavsifi</Label>
+                <Textarea 
+                  value={formData.description}
+                  onChange={e => setFormData({...formData, description: e.target.value})}
+                  placeholder="Mahsulot tarkibi va ma'lumotlar..." 
+                  className="flat-input min-h-[100px] font-bold" 
+                />
               </div>
             </div>
             <DialogFooter>
-              <button className="flat-button-primary w-full uppercase py-4">Saqlash va chop etish</button>
+              <button onClick={handleAddFood} className="flat-button-primary w-full uppercase py-4">Saqlash va chop etish</button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -160,66 +224,60 @@ export default function AdminFoodsPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-        {filteredFoods.length > 0 ? (
-          filteredFoods.map((dish) => (
-            <div key={dish.id} className="flat-card overflow-hidden group bg-white">
-              <div className="relative h-64 border-b-2 border-black overflow-hidden bg-muted flex items-center justify-center">
-                {dish.image_url ? (
-                  <Image 
-                    src={dish.image_url} 
-                    alt={dish.name} 
-                    fill 
-                    className="object-cover group-hover:scale-110 transition-transform duration-700" 
-                  />
-                ) : (
-                  <ImageIcon className="h-12 w-12 text-muted-foreground opacity-20" />
-                )}
-                <div className="absolute top-4 left-4 bg-primary text-white border-2 border-black px-5 py-2 rounded-xl font-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] text-lg">
-                  {dish.price.toLocaleString()} so'm
+        {filteredFoods.map((dish) => (
+          <div key={dish.id} className="flat-card overflow-hidden group bg-white">
+            <div className="relative h-64 border-b-2 border-black overflow-hidden bg-muted flex items-center justify-center">
+              {dish.image_url ? (
+                <Image 
+                  src={dish.image_url} 
+                  alt={dish.name} 
+                  fill 
+                  className="object-cover group-hover:scale-110 transition-transform duration-700" 
+                />
+              ) : (
+                <ImageIcon className="h-12 w-12 text-muted-foreground opacity-20" />
+              )}
+              <div className="absolute top-4 left-4 bg-primary text-white border-2 border-black px-5 py-2 rounded-xl font-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] text-lg">
+                {dish.price.toLocaleString()} so'm
+              </div>
+            </div>
+            
+            <div className="p-8">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-2xl font-black uppercase tracking-tighter mb-1 leading-none">{dish.name}</h3>
+                  <Badge className="bg-secondary/10 text-secondary border-none font-black text-[10px] uppercase tracking-widest px-0">
+                    {dish.categories?.name}
+                  </Badge>
+                </div>
+                <div className="flex gap-2">
+                  <button className="h-10 w-10 border-2 border-black rounded-xl bg-white flex items-center justify-center hover:bg-muted transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[1px] active:translate-y-[1px]">
+                    <Pencil className="h-4 w-4" />
+                  </button>
+                  <button className="h-10 w-10 border-2 border-black rounded-xl bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[1px] active:translate-y-[1px]">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
               
-              <div className="p-8">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-2xl font-black uppercase tracking-tighter mb-1 leading-none">{dish.name}</h3>
-                    <Badge className="bg-secondary/10 text-secondary border-none font-black text-[10px] uppercase tracking-widest px-0">
-                      {dish.categories?.name}
-                    </Badge>
-                  </div>
-                  <div className="flex gap-2">
-                    <button className="h-10 w-10 border-2 border-black rounded-xl bg-white flex items-center justify-center hover:bg-muted transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[1px] active:translate-y-[1px]">
-                      <Pencil className="h-4 w-4" />
-                    </button>
-                    <button className="h-10 w-10 border-2 border-black rounded-xl bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[1px] active:translate-y-[1px]">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-                
-                <p className="text-muted-foreground font-bold text-sm line-clamp-2 mb-8 leading-relaxed h-10">
-                  {dish.description}
-                </p>
+              <p className="text-muted-foreground font-bold text-sm line-clamp-2 mb-8 leading-relaxed h-10">
+                {dish.description}
+              </p>
 
-                <div className="flex justify-between items-center pt-5 border-t-2 border-black border-dashed font-black text-[10px] uppercase tracking-widest">
-                  <div className="flex items-center gap-2 text-primary">
-                    <Clock className="h-4 w-4" /> {dish.preparation_time || '15-20'} DAQ
-                  </div>
-                  <div className={cn(
-                    "flex items-center gap-1.5",
-                    dish.is_available ? "text-green-600" : "text-red-500"
-                  )}>
-                    <CheckCircle className="h-4 w-4" /> {dish.is_available ? 'SOTUVDA' : 'YO\'Q'}
-                  </div>
+              <div className="flex justify-between items-center pt-5 border-t-2 border-black border-dashed font-black text-[10px] uppercase tracking-widest">
+                <div className="flex items-center gap-2 text-primary">
+                  <Clock className="h-4 w-4" /> {dish.preparation_time || '15-20'} DAQ
+                </div>
+                <div className={cn(
+                  "flex items-center gap-1.5",
+                  dish.is_available ? "text-green-600" : "text-red-500"
+                )}>
+                  <CheckCircle className="h-4 w-4" /> {dish.is_available ? 'SOTUVDA' : 'YO\'Q'}
                 </div>
               </div>
             </div>
-          ))
-        ) : (
-          <div className="col-span-full py-20 text-center flat-card bg-white/50 border-dashed">
-            <p className="font-black uppercase text-muted-foreground">Ushbu turkumda taomlar topilmadi.</p>
           </div>
-        )}
+        ))}
       </div>
     </div>
   );

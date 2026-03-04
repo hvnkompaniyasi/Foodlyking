@@ -1,8 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Vercel Environment Variables orqali olinadi. 
-// Build jarayonida xatolik bermasligi uchun default (placeholder) qiymatlar qo'shildi.
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder-url.supabase.co';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Build vaqtida xatolik bermasligi uchun tekshiruv
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn('Supabase URL yoki Anon Key topilmadi. Iltimos, Vercel Environment Variables-ni sozlang.');
+}
+
+export const supabase = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co', 
+  supabaseAnonKey || 'placeholder'
+);

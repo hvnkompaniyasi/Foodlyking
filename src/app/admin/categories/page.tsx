@@ -19,6 +19,8 @@ export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [newCatName, setNewCatName] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -27,14 +29,9 @@ export default function AdminCategoriesPage() {
   const fetchCategories = async () => {
     setLoading(true);
     try {
-      // Kategoriyalar va ulardagi taomlar sonini olish (supabase relationship orqali)
       const { data, error } = await supabase
         .from('categories')
-        .select(`
-          id,
-          name,
-          foods (count)
-        `);
+        .select('id, name');
 
       if (error) throw error;
       setCategories(data || []);
@@ -46,6 +43,26 @@ export default function AdminCategoriesPage() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAddCategory = async () => {
+    if (!newCatName.trim()) return;
+    setIsAdding(true);
+    try {
+      const { error } = await supabase
+        .from('categories')
+        .insert([{ name: newCatName }]);
+      
+      if (error) throw error;
+
+      toast({ title: "Muvaffaqiyatli", description: "Yangi kategoriya qo'shildi." });
+      setNewCatName('');
+      fetchCategories();
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Xatolik", description: error.message });
+    } finally {
+      setIsAdding(false);
     }
   };
 
@@ -83,11 +100,23 @@ export default function AdminCategoriesPage() {
             <div className="grid gap-6 py-4">
               <div className="grid gap-2">
                 <Label htmlFor="cat-name" className="font-black text-sm uppercase">Kategoriya nomi</Label>
-                <Input id="cat-name" placeholder="Masalan: Burgerlar" className="flat-input h-12" />
+                <Input 
+                  id="cat-name" 
+                  value={newCatName}
+                  onChange={(e) => setNewCatName(e.target.value)}
+                  placeholder="Masalan: Burgerlar" 
+                  className="flat-input h-12" 
+                />
               </div>
             </div>
             <DialogFooter>
-              <button className="flat-button-secondary w-full uppercase">Qo'shish</button>
+              <button 
+                onClick={handleAddCategory}
+                disabled={isAdding}
+                className="flat-button-secondary w-full uppercase"
+              >
+                {isAdding ? "Qo'shilmoqda..." : "Qo'shish"}
+              </button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -122,9 +151,6 @@ export default function AdminCategoriesPage() {
             
             <div className="space-y-2">
               <h3 className="text-2xl font-black uppercase tracking-tight line-clamp-1">{cat.name}</h3>
-              <div className="flex items-center gap-2 font-black text-[10px] text-muted-foreground uppercase tracking-widest">
-                <Hash className="h-3 w-3" /> {cat.foods?.[0]?.count || 0} ta mahsulot bor
-              </div>
             </div>
           </div>
         ))}

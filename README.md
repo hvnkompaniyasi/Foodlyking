@@ -28,7 +28,7 @@ git push -u origin main
 
 ## Kelajakdagi yangilanishlarni yuklash
 
-Har gal kodni o'zgartirganingizda:
+Har gal kodni o'zgartirganingizda va uni GitHub-ga yangilamoqchi bo'lsangiz:
 1. `git add .`
 2. `git commit -m "Yangilanish tavsifi"`
 3. `git push origin main`

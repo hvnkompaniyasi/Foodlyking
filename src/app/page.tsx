@@ -76,7 +76,7 @@ export default function LoginPage() {
               EMAIL MANZILINGIZ
             </label>
             <div className="relative group">
-              <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-6 w-6 text-black z-10 transition-transform group-focus-within:scale-110" />
+              <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-6 w-6 text-black z-20 pointer-events-none transition-transform group-focus-within:scale-110" />
               <Input
                 type="email"
                 placeholder="king@foodly.uz"
@@ -93,7 +93,7 @@ export default function LoginPage() {
               MAXFIY KALIT
             </label>
             <div className="relative group">
-              <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-6 w-6 text-black z-10 transition-transform group-focus-within:scale-110" />
+              <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-6 w-6 text-black z-20 pointer-events-none transition-transform group-focus-within:scale-110" />
               <Input
                 type="password"
                 placeholder="••••••"

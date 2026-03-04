@@ -10,14 +10,12 @@ Loyihani Vercel-ga yuklaganingizdan so'ng, **Settings -> Environment Variables**
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase -> Settings -> API -> Project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase -> Settings -> API -> anon public API Key |
 
-## GitHub-ga yuklash buyruqlari
+## GitHub-ga yuklash (Bir qatorli buyruq)
 
-Terminalga ketma-ket nusxalab tashlang:
+Terminalga quyidagilarni nusxalab tashlang va Enter bosing:
 
 ```bash
-git add .
-git commit -m "Login sahifasi piktogrammalari va minimalist dizayn yangilandi"
-git push origin main
+git add . && git commit -m "Update: Login icons and minimalist style" && git push origin main
 ```
 
 ## Texnologiyalar

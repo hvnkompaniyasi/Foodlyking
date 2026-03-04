@@ -10,7 +10,7 @@ import {
   MessageSquare, 
   Users, 
   LogOut,
-  Smile,
+  Utensils,
   X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -34,51 +34,51 @@ export function DashboardSidebar({ onClose, className }: SidebarProps) {
   const pathname = usePathname();
 
   return (
-    <div className={cn("w-64 bg-white h-full border-r flex flex-col z-50", className)}>
+    <div className={cn("w-64 bg-white h-full border-r border-border/40 flex flex-col z-50", className)}>
       {/* Logo Section */}
-      <div className="p-6 flex items-center justify-between mb-8">
+      <div className="p-8 flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="bg-primary p-2 rounded-2xl shadow-lg shadow-primary/30 text-white">
-            <Smile className="h-6 w-6" />
+          <div className="bg-primary p-2 rounded-2xl shadow-xl shadow-primary/20 text-white">
+            <Utensils className="h-6 w-6" />
           </div>
-          <span className="text-xl font-bold tracking-tight text-primary font-headline">FOODLY</span>
+          <span className="text-xl font-black tracking-tighter text-foreground font-headline uppercase">FOODLY<span className="text-primary">KING</span></span>
         </div>
         {onClose && (
-          <Button variant="ghost" size="icon" onClick={onClose} className="lg:hidden">
-            <X className="h-5 w-5" />
+          <Button variant="ghost" size="icon" onClick={onClose} className="lg:hidden h-10 w-10 rounded-xl">
+            <X className="h-6 w-6" />
           </Button>
         )}
       </div>
 
       {/* Navigation Items */}
-      <nav className="flex-1 px-4 space-y-1">
+      <nav className="flex-1 px-4 space-y-2">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href;
+          const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/admin');
           return (
             <Link 
               key={item.href} 
               href={item.href}
               onClick={onClose}
               className={cn(
-                "flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all group",
+                "flex items-center gap-3 px-5 py-4 rounded-2xl transition-all group",
                 isActive 
-                  ? "bg-primary/10 text-primary font-bold shadow-sm" 
-                  : "text-muted-foreground hover:bg-secondary/80 hover:text-primary"
+                  ? "bg-primary text-white font-black shadow-lg shadow-primary/20" 
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
-              <Icon className={cn("h-5 w-5", isActive ? "text-primary" : "group-hover:text-primary transition-colors")} />
-              <span className="text-sm font-medium">{item.name}</span>
+              <Icon className={cn("h-5 w-5", isActive ? "text-white" : "group-hover:text-primary transition-colors")} />
+              <span className="text-[15px]">{item.name}</span>
             </Link>
           );
         })}
       </nav>
 
-      {/* Logout - Always on the bottom left side */}
-      <div className="p-4 border-t mt-auto">
-        <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-2xl px-4 h-12">
+      {/* Logout */}
+      <div className="p-6 border-t border-border/40 mt-auto">
+        <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-2xl px-5 h-14 font-bold">
           <LogOut className="h-5 w-5" />
-          <span className="text-sm font-medium">Chiqish</span>
+          <span>Chiqish</span>
         </Button>
       </div>
     </div>

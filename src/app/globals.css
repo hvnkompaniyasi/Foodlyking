@@ -4,25 +4,25 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
-    --foreground: 24 10% 10%;
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 24 10% 10%;
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 24 10% 10%;
-    --primary: 25 100% 50%; /* Orange from image */
+    --popover-foreground: 222 47% 11%;
+    --primary: 25 78% 49%; /* To'q sariq #E0701C */
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 20% 98%;
-    --secondary-foreground: 25 100% 50%;
-    --muted: 210 20% 95%;
-    --muted-foreground: 24 10% 45%;
-    --accent: 25 100% 50%;
+    --secondary: 175 66% 51%; /* Feruza #30D5C8 */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 175 66% 51%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 210 20% 90%;
-    --input: 210 20% 90%;
-    --ring: 25 100% 50%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 25 78% 49%;
     --radius: 1rem;
   }
 }
@@ -32,17 +32,29 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-body;
+    @apply bg-background text-foreground font-body antialiased;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-headline;
+    @apply font-headline font-bold;
   }
 }
 
-.dashboard-shadow {
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+.flat-shadow {
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.05);
 }
 
-.active-nav-item {
-  @apply bg-primary/10 text-primary border-r-4 border-primary font-bold;
+.flat-button {
+  @apply transition-transform active:scale-95 duration-100;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-muted;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary/20 rounded-full hover:bg-primary/40;
 }

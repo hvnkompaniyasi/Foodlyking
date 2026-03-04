@@ -28,14 +28,14 @@ export function DashboardSidebar() {
 
   return (
     <div className="w-64 bg-white h-screen fixed left-0 top-0 border-r flex flex-col z-50">
-      <div className="p-6 flex items-center gap-3 mb-8">
+      <div className="p-6 flex items-center gap-3 mb-12">
         <div className="bg-primary p-2 rounded-2xl shadow-lg shadow-primary/30">
           <Smile className="text-white h-8 w-8" />
         </div>
         <span className="text-2xl font-bold tracking-tight text-primary font-headline">FOODLY</span>
       </div>
 
-      <nav className="flex-1 space-y-1">
+      <nav className="flex-1 px-4 space-y-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
@@ -44,8 +44,10 @@ export function DashboardSidebar() {
               key={item.href} 
               href={item.href}
               className={cn(
-                "flex items-center gap-4 px-8 py-4 transition-all hover:bg-secondary/50 group",
-                isActive ? "active-nav-item" : "text-muted-foreground"
+                "flex items-center gap-4 px-6 py-4 rounded-2xl transition-all group",
+                isActive 
+                  ? "bg-primary/10 text-primary font-bold shadow-sm" 
+                  : "text-muted-foreground hover:bg-secondary/80"
               )}
             >
               <Icon className={cn("h-5 w-5", isActive ? "text-primary" : "group-hover:text-primary transition-colors")} />
@@ -55,8 +57,8 @@ export function DashboardSidebar() {
         })}
       </nav>
 
-      <div className="p-4 mt-auto border-t">
-        <button className="flex items-center gap-4 px-4 py-3 w-full text-muted-foreground hover:bg-secondary rounded-xl transition-all">
+      <div className="p-6 mt-auto border-t">
+        <button className="flex items-center gap-4 px-6 py-4 w-full text-muted-foreground hover:bg-secondary rounded-2xl transition-all">
           <Moon className="h-5 w-5" />
           <span className="text-sm font-medium">TUNGI MAVZU</span>
         </button>

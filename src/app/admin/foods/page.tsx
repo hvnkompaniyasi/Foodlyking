@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Search, Plus, Star, Pencil, Trash2, Clock, Package } from 'lucide-react';
+import { Search, Plus, Star, Pencil, Trash2, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { RESTAURANTS } from '@/lib/mock-data';
+import { cn } from '@/lib/utils';
 
 export default function AdminFoodsPage() {
   const [activeCategory, setActiveCategory] = useState('Barchasi');
@@ -15,6 +15,10 @@ export default function AdminFoodsPage() {
   const allDishes = RESTAURANTS.flatMap(r => r.menu.map(d => ({ ...d, restaurantName: r.name })));
   
   const categories = ['Barchasi', 'Fast Food', 'Healthy', 'Drinks', 'Desserts'];
+
+  const filteredDishes = activeCategory === 'Barchasi' 
+    ? allDishes 
+    : allDishes.filter(dish => dish.category === activeCategory);
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -28,36 +32,36 @@ export default function AdminFoodsPage() {
         </Button>
       </div>
 
-      {/* Search & Filters */}
-      <div className="flex flex-wrap items-center gap-4 mb-8">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-          <Input 
-            placeholder="Qidirish..." 
-            className="pl-12 h-14 bg-white border-none shadow-sm rounded-2xl text-lg focus-visible:ring-primary"
-          />
-        </div>
-        <div className="flex gap-2 overflow-x-auto pb-2">
+      {/* Categories & Search - Aligned to Left */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+        <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
               className={cn(
-                "px-6 py-3 rounded-2xl text-sm font-bold transition-all shadow-sm",
+                "px-6 py-3 rounded-2xl text-sm font-bold transition-all shadow-sm whitespace-nowrap border border-transparent",
                 activeCategory === cat 
                   ? "bg-[#00D1B2] text-white shadow-[#00D1B2]/30" 
-                  : "bg-white text-muted-foreground hover:bg-secondary"
+                  : "bg-white text-muted-foreground hover:bg-secondary border-secondary"
               )}
             >
               {cat}
             </button>
           ))}
         </div>
+        <div className="relative w-full md:max-w-md">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Input 
+            placeholder="Qidirish..." 
+            className="pl-12 h-14 bg-white border-none shadow-sm rounded-2xl text-lg focus-visible:ring-primary"
+          />
+        </div>
       </div>
 
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-        {allDishes.map((dish) => (
+        {filteredDishes.map((dish) => (
           <div key={dish.id} className="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-secondary group">
             <div className="relative h-56">
               <Image 
@@ -112,12 +116,4 @@ export default function AdminFoodsPage() {
       </div>
     </div>
   );
-}
-
-// Helper for CN
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
-
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
 }

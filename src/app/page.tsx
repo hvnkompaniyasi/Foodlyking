@@ -18,6 +18,17 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
+    
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    if (!supabaseUrl || supabaseUrl.includes('placeholder')) {
+      toast({
+        variant: "destructive",
+        title: "Konfiguratsiya xatosi!",
+        description: "Supabase URL topilmadi. Vercel sozlamalarini tekshiring.",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -28,6 +39,8 @@ export default function LoginPage() {
 
       if (authError) throw authError;
 
+      if (!authData.user) throw new Error("Foydalanuvchi ma'lumotlari yuklanmadi.");
+
       // Profiles jadvalidan rolni tekshirish
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
@@ -36,8 +49,9 @@ export default function LoginPage() {
         .single();
 
       if (profileError || !profile) {
+        console.error('Profile fetch error:', profileError);
         await supabase.auth.signOut();
-        throw new Error("Profil topilmadi yoki ruxsat yo'q.");
+        throw new Error("Sizning profilingiz 'profiles' jadvalida topilmadi. Ma'muriyatga murojaat qiling.");
       }
 
       if (profile.role === 'king') {
@@ -51,14 +65,21 @@ export default function LoginPage() {
         toast({
           variant: "destructive",
           title: "Kirish rad etildi!",
-          description: "Sizda ushbu portalga kirish huquqi yo'q.",
+          description: `Sizning rolingiz: ${profile.role}. Faqat 'king' roliga ega foydalanuvchilar kira oladi.`,
         });
       }
     } catch (error: any) {
+      console.error('Login detailed error:', error);
+      let errorMsg = error.message || "Login yoki parol noto'g'ri.";
+      
+      if (errorMsg === 'Failed to fetch') {
+        errorMsg = "Internet aloqasi yoki Supabase URL xatosi. Iltimos, Vercel-dagi URL to'g'riligini (https:// bilan boshlanishini) tekshiring.";
+      }
+
       toast({
         variant: "destructive",
         title: "Xatolik!",
-        description: error.message || "Login yoki parol noto'g'ri.",
+        description: errorMsg,
       });
     } finally {
       setLoading(false);

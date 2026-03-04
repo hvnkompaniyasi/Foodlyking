@@ -1,15 +1,26 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Vercel Environment Variables orqali olinadi. 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 
-// Build vaqtida xatolik bermasligi uchun tekshiruv
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase URL yoki Anon Key topilmadi. Iltimos, Vercel Environment Variables-ni sozlang.');
+// URL oxirida ortiqcha / bo'lsa uni olib tashlash
+const cleanUrl = supabaseUrl?.endsWith('/') ? supabaseUrl.slice(0, -1) : supabaseUrl;
+
+if (!cleanUrl || !supabaseAnonKey) {
+  if (typeof window !== 'undefined') {
+    console.error('Supabase configuration missing! Please check Vercel environment variables.');
+  }
 }
 
 export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co', 
-  supabaseAnonKey || 'placeholder'
+  cleanUrl || 'https://placeholder.supabase.co', 
+  supabaseAnonKey || 'placeholder',
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  }
 );

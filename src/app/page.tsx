@@ -1,8 +1,9 @@
+
 'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Lock, User, ArrowRight, Loader2 } from 'lucide-react';
+import { Lock, Mail, ArrowRight, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
@@ -61,28 +62,28 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="text-center mb-12">
+        <div className="text-center mb-10">
           <h1 className="text-6xl font-black uppercase tracking-tighter leading-none">
             FOODLY<span className="text-primary">KING</span>
           </h1>
           <div className="mt-4 inline-block bg-secondary text-white px-6 py-2 border-4 border-black font-black text-xs uppercase tracking-[0.2em] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-            MAXFIY PORTAL
+            MAXFIY BOSHQARUV PORTALI
           </div>
         </div>
 
         <form onSubmit={handleLogin} className="flat-card p-10 space-y-8 bg-white">
           <div className="space-y-3">
             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">
-              EMAIL MANZIL
+              EMAIL MANZILINGIZ
             </label>
-            <div className="relative">
-              <User className="absolute left-5 top-1/2 -translate-y-1/2 h-6 w-6 text-black" />
+            <div className="relative flex items-center">
+              <Mail className="absolute left-5 h-6 w-6 text-black z-10" />
               <Input
                 type="email"
                 placeholder="king@foodly.uz"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="flat-input pl-14 h-16 text-lg font-bold"
+                className="flat-input pl-16 h-16 text-lg font-bold w-full"
                 required
               />
             </div>
@@ -92,14 +93,14 @@ export default function LoginPage() {
             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">
               MAXFIY KALIT
             </label>
-            <div className="relative">
-              <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-6 w-6 text-black" />
+            <div className="relative flex items-center">
+              <Lock className="absolute left-5 h-6 w-6 text-black z-10" />
               <Input
                 type="password"
-                placeholder="••••••••"
+                placeholder="••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="flat-input pl-14 h-16 text-lg font-bold"
+                className="flat-input pl-16 h-16 text-lg font-bold w-full"
                 required
               />
             </div>

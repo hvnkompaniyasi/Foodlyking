@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -17,6 +18,7 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
 
     try {
@@ -62,12 +64,12 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md animate-in fade-in zoom-in duration-500">
         <div className="text-center mb-10">
           <h1 className="text-6xl font-black uppercase tracking-tighter leading-none">
             FOODLY<span className="text-primary">KING</span>
           </h1>
-          <div className="mt-4 inline-block bg-secondary text-white px-6 py-2 border-4 border-black font-black text-xs uppercase tracking-[0.2em] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+          <div className="mt-4 inline-block bg-secondary text-white px-6 py-2 border-4 border-black font-black text-[10px] uppercase tracking-[0.3em] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
             MAXFIY BOSHQARUV PORTALI
           </div>
         </div>
@@ -95,6 +97,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 className="flat-input pl-16 h-20 text-lg font-bold w-full focus:border-primary pt-6"
                 required
+                autoComplete="email"
               />
             </div>
           </div>
@@ -121,6 +124,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="flat-input pl-16 h-20 text-lg font-bold w-full focus:border-primary pt-6"
                 required
+                autoComplete="current-password"
               />
             </div>
           </div>
@@ -128,7 +132,7 @@ export default function LoginPage() {
           <button 
             type="submit" 
             disabled={loading}
-            className="flat-button-primary w-full h-20 text-2xl flex items-center justify-center gap-4 disabled:opacity-70 mt-4"
+            className="flat-button-primary w-full h-20 text-2xl flex items-center justify-center gap-4 disabled:opacity-70 mt-4 uppercase font-black tracking-widest"
           >
             {loading ? <Loader2 className="h-8 w-8 animate-spin" /> : <>KIRISH <ArrowRight className="h-8 w-8" /></>}
           </button>

@@ -1,6 +1,7 @@
 
 'use client';
 
+import dynamic from 'next/dynamic';
 import { 
   TrendingUp, 
   Package, 
@@ -8,18 +9,19 @@ import {
   DollarSign,
   ArrowUpRight,
   Clock,
-  CheckCircle2
+  CheckCircle2,
+  Loader2
 } from 'lucide-react';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  Cell
-} from 'recharts';
+
+// Recharts kutubxonasini dinamik yuklash (Bundle hajmini kamaytirish uchun)
+const ResponsiveContainer = dynamic(() => import('recharts').then(mod => mod.ResponsiveContainer), { ssr: false, loading: () => <div className="h-full w-full bg-muted animate-pulse rounded-xl" /> });
+const BarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
+const Bar = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
+const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
+const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(mod => mod.CartesianGrid), { ssr: false });
+const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
+const Cell = dynamic(() => import('recharts').then(mod => mod.Cell), { ssr: false });
 
 const DATA = [
   { name: 'Dush', sales: 4000 },
@@ -36,12 +38,12 @@ export default function AdminDashboardPage() {
     <div className="space-y-10">
       <div>
         <h1 className="text-4xl font-black uppercase tracking-tight">Asosiy <span className="text-primary">Ko'rsatkichlar</span></h1>
-        <p className="text-muted-foreground font-medium mt-1">Bugungi kungi tizim holati va umumiy statistika</p>
+        <p className="text-muted-foreground font-medium mt-1 uppercase text-xs tracking-widest">Bugungi kungi tizim holati va umumiy statistika</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: "Bugungi tushum", value: "$2,450", icon: DollarSign, color: "bg-green-500", trend: "+12%" },
+          { label: "Bugungi tushum", value: "24,5 mln", icon: DollarSign, color: "bg-green-500", trend: "+12%" },
           { label: "Yangi buyurtmalar", value: "48", icon: Package, color: "bg-primary", trend: "+5%" },
           { label: "Mijozlar", value: "1,240", icon: Users, color: "bg-secondary", trend: "+18%" },
           { label: "Faoliyat", value: "98%", icon: TrendingUp, color: "bg-orange-400", trend: "Stabil" }
@@ -64,8 +66,8 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 flat-card p-8 bg-white">
           <div className="flex justify-between items-center mb-8">
-            <h3 className="text-xl font-black uppercase">Haftalik Savdo</h3>
-            <button className="text-xs font-black text-primary hover:underline flex items-center gap-1 uppercase">
+            <h3 className="text-xl font-black uppercase tracking-tight">Haftalik Savdo</h3>
+            <button className="text-xs font-black text-primary hover:underline flex items-center gap-1 uppercase tracking-widest">
               Batafsil <ArrowUpRight className="h-3 w-3" />
             </button>
           </div>
@@ -77,12 +79,12 @@ export default function AdminDashboardPage() {
                   dataKey="name" 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fill: '#6B7280', fontWeight: 'bold', fontSize: 12 }} 
+                  tick={{ fill: '#6B7280', fontWeight: 'bold', fontSize: 10 }} 
                 />
                 <YAxis 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fill: '#6B7280', fontWeight: 'bold', fontSize: 12 }} 
+                  tick={{ fill: '#6B7280', fontWeight: 'bold', fontSize: 10 }} 
                 />
                 <Tooltip 
                   cursor={{ fill: '#F3F4F6' }}
@@ -90,7 +92,8 @@ export default function AdminDashboardPage() {
                     borderRadius: '12px', 
                     border: '2px solid black',
                     boxShadow: '4px 4px 0px 0px rgba(0,0,0,1)',
-                    fontWeight: 'bold'
+                    fontWeight: 'bold',
+                    fontSize: '12px'
                   }}
                 />
                 <Bar dataKey="sales" radius={[4, 4, 0, 0]}>
@@ -104,7 +107,7 @@ export default function AdminDashboardPage() {
         </div>
 
         <div className="flat-card p-8 bg-white flex flex-col">
-          <h3 className="text-xl font-black uppercase mb-6">So'nggi harakatlar</h3>
+          <h3 className="text-xl font-black uppercase mb-6 tracking-tight">So'nggi harakatlar</h3>
           <div className="space-y-6 flex-1">
             {[
               { text: "Yangi buyurtma #1092", time: "2 daq oldin", icon: Package, color: "text-primary" },
@@ -112,18 +115,18 @@ export default function AdminDashboardPage() {
               { text: "Kuryer yo'lga chiqdi", time: "22 daq oldin", icon: Clock, color: "text-secondary" },
               { text: "Mijoz fikri keldi", time: "1 soat oldin", icon: Users, color: "text-orange-400" }
             ].map((item, i) => (
-              <div key={i} className="flex gap-4 items-start">
-                <div className={`mt-1 ${item.color}`}>
+              <div key={i} className="flex gap-4 items-start group">
+                <div className={`mt-1 ${item.color} group-hover:scale-110 transition-transform`}>
                   <item.icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="font-black text-sm uppercase leading-none mb-1">{item.text}</p>
-                  <p className="text-xs text-muted-foreground font-bold uppercase">{item.time}</p>
+                  <p className="font-black text-sm uppercase leading-none mb-1 tracking-tight">{item.text}</p>
+                  <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">{item.time}</p>
                 </div>
               </div>
             ))}
           </div>
-          <button className="flat-button-secondary w-full mt-8 py-3 text-xs uppercase">Barchasini ko'rish</button>
+          <button className="flat-button-secondary w-full mt-8 py-3 text-[10px] uppercase tracking-[0.2em]">Barchasini ko'rish</button>
         </div>
       </div>
     </div>

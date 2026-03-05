@@ -105,13 +105,13 @@ const DashboardLayout = () => {
       <motion.aside
         animate={{ width: isCollapsed ? 80 : 288 }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="hidden lg:block fixed left-0 top-0 h-screen z-40"
+        className="hidden lg:block fixed left-0 top-0 h-screen z-[1001]"
       >
         <div className="relative h-full">
           <SidebarContent collapsed={isCollapsed} />
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="absolute -right-3 top-20 w-6 h-6 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform z-50"
+            className="absolute -right-3 top-20 w-6 h-6 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform z-[1002]"
           >
             {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
           </button>
@@ -127,14 +127,14 @@ const DashboardLayout = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileOpen(false)}
-              className="lg:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-[100]"
+              className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-md z-[2000]"
             />
             <motion.aside
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="lg:hidden fixed left-0 top-0 h-screen w-[280px] z-[101] shadow-2xl"
+              className="lg:hidden fixed left-0 top-0 h-screen w-[280px] z-[2001] shadow-2xl"
             >
               <SidebarContent />
               <button

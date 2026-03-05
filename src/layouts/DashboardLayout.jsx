@@ -40,28 +40,30 @@ const DashboardLayout = () => {
   ]
 
   const SidebarContent = ({ collapsed = false }) => (
-    <div className="flex flex-col h-full bg-white border-r border-gray-100 shadow-sm transition-all duration-300">
-      <div className={`p-6 flex items-center ${collapsed ? 'justify-center' : 'justify-between'}`}>
+    <div className="flex flex-col h-full bg-white border-r border-gray-100 shadow-[20px_0_50px_rgba(0,0,0,0.02)] transition-all duration-300">
+      <div className={`p-8 mb-4 flex items-center ${collapsed ? 'justify-center' : 'justify-between'}`}>
         {!collapsed && (
           <div className="flex items-center gap-2">
-            <h2 className="text-xl font-black tracking-tighter-premium leading-none">Foodly</h2>
-            <span className="text-[10px] bg-black text-white px-2 py-0.5 rounded-full font-black uppercase tracking-widest">King</span>
+            <h2 className="text-2xl font-black tracking-tighter-premium leading-none">Foodly</h2>
+            <div className="bg-black text-white px-3 py-1 rounded-xl shadow-lg shadow-black/20">
+              <span className="text-[10px] font-black uppercase tracking-widest">King</span>
+            </div>
           </div>
         )}
         {collapsed && (
-          <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white text-xs font-black">F</div>
+          <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white text-lg font-black shadow-lg shadow-black/20">F</div>
         )}
       </div>
 
-      <nav className="flex-1 px-3 mt-4 space-y-1">
+      <nav className="flex-1 px-4 space-y-2">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path
           return (
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center gap-3 px-3 py-3 rounded-2xl transition-all duration-300 group relative ${isActive
-                ? 'bg-black text-white shadow-xl shadow-black/10'
+              className={`flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-300 group relative ${isActive
+                ? 'bg-black text-white shadow-2xl shadow-black/20'
                 : 'text-gray-400 hover:bg-gray-50 hover:text-black'
                 }`}
             >
@@ -70,13 +72,13 @@ const DashboardLayout = () => {
                 <motion.span
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="font-bold text-sm"
+                  className="font-black text-sm tracking-tight"
                 >
                   {item.label}
                 </motion.span>
               )}
               {collapsed && (
-                <div className="absolute left-full ml-4 px-3 py-2 bg-black text-white text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 whitespace-nowrap">
+                <div className="absolute left-full ml-6 px-4 py-2 bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50 whitespace-nowrap shadow-xl">
                   {item.label}
                 </div>
               )}
@@ -85,10 +87,10 @@ const DashboardLayout = () => {
         })}
       </nav>
 
-      <div className="p-3 border-t border-gray-50 mb-6">
+      <div className="p-4 mt-auto border-t border-gray-50">
         <button
           onClick={handleLogout}
-          className={`flex items-center gap-3 px-3 py-3 w-full rounded-2xl text-red-500 hover:bg-red-50 transition-all duration-300 font-bold text-sm ${collapsed ? 'justify-center' : ''}`}
+          className={`flex items-center gap-4 px-4 py-4 w-full rounded-2xl text-red-500 hover:bg-red-50 transition-all duration-300 font-black text-sm tracking-tight ${collapsed ? 'justify-center' : ''}`}
         >
           <LogOut size={20} />
           {!collapsed && <span>Chiqish</span>}

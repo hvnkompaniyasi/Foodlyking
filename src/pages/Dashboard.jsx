@@ -21,10 +21,10 @@ const Dashboard = () => {
     return (
         <div className="space-y-10">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard title="Kunlik Daromad" value="$4,250" icon={DollarSign} trend="+12.5%" />
-                <StatCard title="Yangi Buyurtmalar" value="128" icon={ShoppingBag} trend="+8.2%" />
+                <StatCard title="Umumiy Savdo" value="$42,500" icon={DollarSign} trend="+12.5%" />
+                <StatCard title="Umumiy Buyurtmalar" value="1,280" icon={ShoppingBag} trend="+8.2%" />
                 <StatCard title="Mijozlar" value="1,420" icon={Users} trend="+3.1%" />
-                <StatCard title="Conversion" value="3.2%" icon={PieChart} trend="+0.4%" />
+                <StatCard title="Bugungi Savdo" value="$425.00" icon={PieChart} trend="+0.4%" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -54,19 +54,40 @@ const Dashboard = () => {
 
                 <div className="premium-card bg-black text-white relative overflow-hidden">
                     <div className="relative z-10">
-                        <h3 className="text-lg font-bold mb-4">Maxfiy Eslatma</h3>
-                        <p className="text-gray-400 text-sm leading-relaxed mb-8">
-                            Bugungi barcha buyurtmalar sifatli va tez yetkazilishi shart. Maxfiylikni saqlang.
-                        </p>
-                        <div className="pt-4 border-t border-white-10">
-                            <p className="text-xs font-bold text-gray-500 uppercase">Tizim holati</p>
-                            <div className="flex items-center gap-2 mt-2 font-mono text-sm text-green-400">
-                                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                        <h3 className="text-lg font-bold mb-6">Top Operatorlar</h3>
+                        <div className="space-y-4">
+                            {[
+                                { name: "Ali Valiyev", count: 45 },
+                                { name: "Otabek G'ulomov", count: 32 },
+                                { name: "Sardor Ahmedov", count: 28 },
+                                { name: "Javohir Toshmatov", count: 21 },
+                                { name: "Rustam Karimov", count: 18 }
+                            ].map((op, idx) => (
+                                <div key={idx} className="flex items-center justify-between group cursor-default">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-bold">
+                                            {idx + 1}
+                                        </div>
+                                        <p className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">
+                                            {op.name}
+                                        </p>
+                                    </div>
+                                    <span className="text-xs font-bold bg-white/5 px-2 py-1 rounded-lg">
+                                        {op.count} ta
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mt-8 pt-6 border-t border-white/10">
+                            <p className="text-[10px] font-black tracking-widest text-gray-500 uppercase">Tizim holati</p>
+                            <div className="flex items-center gap-2 mt-2 font-mono text-xs text-green-400">
+                                <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
                                 ONLINE
                             </div>
                         </div>
                     </div>
-                    <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl" />
+                    <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl pointer-events-none" />
                 </div>
             </div>
         </div>

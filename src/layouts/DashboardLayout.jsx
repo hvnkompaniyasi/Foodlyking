@@ -17,7 +17,7 @@ const DashboardLayout = () => {
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
     { icon: Package, label: 'Buyurtmalar', path: '/orders' },
-    { icon: Users, label: 'Adminlar', path: '/admins' },
+    { icon: Users, label: 'Operatorlar', path: '/operators' },
     { icon: PieChart, label: 'Statistika', path: '/stats' },
     { icon: Settings, label: 'Sozlamalar', path: '/settings' },
   ]

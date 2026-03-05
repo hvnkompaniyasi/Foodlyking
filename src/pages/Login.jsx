@@ -92,11 +92,7 @@ const Login = () => {
                     </div>
                 </form>
 
-                <div className="mt-16 text-center">
-                    <p className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">
-                        &copy; 2026 Foodly Core System
-                    </p>
-                </div>
+
             </motion.div>
         </div>
     )

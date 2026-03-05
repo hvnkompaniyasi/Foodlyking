@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import DashboardLayout from './layouts/DashboardLayout'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
+import Operators from './pages/Operators'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<DashboardLayout />}>
               <Route path="/" element={<Dashboard />} />
+              <Route path="/operators" element={<Operators />} />
               {/* Other routes can be added here */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>

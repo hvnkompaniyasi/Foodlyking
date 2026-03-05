@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Lock, Mail, ArrowRight, Loader2, Copy, AlertCircle } from 'lucide-react';
+import { Lock, Mail, ArrowRight, Loader2, Copy, AlertCircle, Info } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
@@ -29,19 +29,23 @@ export default function LoginPage() {
     e.preventDefault();
     if (loading) return;
     setErrorDetails(null);
-
     setLoading(true);
 
     try {
+      // 1. Auth tekshiruvi
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        setErrorDetails(`Auth Xatosi: ${authError.message}\nKodi: ${authError.status}`);
+        throw authError;
+      }
+      
       if (!authData.user) throw new Error("Foydalanuvchi topilmadi.");
 
-      // Profiles jadvalidan 'king' rolini tekshirish
+      // 2. Profiles jadvalidan 'king' rolini tekshirish
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('id, role')
@@ -49,25 +53,28 @@ export default function LoginPage() {
         .maybeSingle();
 
       if (profileError) {
-        setErrorDetails(`Baza xatosi: ${profileError.message}\nKodi: ${profileError.code}`);
+        const technicalDetails = `Jadval: profiles\nID: ${authData.user.id}\nXato: ${profileError.message}\nKodi: ${profileError.code}`;
+        setErrorDetails(technicalDetails);
         await supabase.auth.signOut();
-        throw new Error("Profil ma'lumotlarini yuklashda xatolik.");
+        throw new Error("Profil ma'lumotlarini yuklashda baza xatoligi yuz berdi.");
       }
 
       if (!profile) {
-        setErrorDetails(`Profil topilmadi (ID: ${authData.user.id}). Iltimos, profiles jadvalida ushbu ID uchun qator borligini tekshiring.`);
+        const technicalDetails = `Foydalanuvchi topildi, lekin profiles jadvalida ushbu ID uchun qator (row) yo'q.\nUser ID: ${authData.user.id}\nMaslahat: Supabase profiles jadvalida ushbu ID bilan yangi qator qo'shing.`;
+        setErrorDetails(technicalDetails);
         await supabase.auth.signOut();
-        throw new Error("Sizning profilingiz tizimda ro'yxatdan o'tmagan.");
+        throw new Error("Profilingiz tizimda topilmadi.");
       }
 
-      // 'king' rolini tekshirish
+      // 3. 'king' rolini tekshirish
       if (profile.role === 'king') {
         toast({ title: "Xush kelibsiz!", description: "Boshqaruv paneliga kirdingiz." });
         router.push('/dashboard');
       } else {
-        setErrorDetails(`Ruxsat yo'q. Sizning rolingiz: '${profile.role}'. Faqat 'king' roli ruxsat etiladi.`);
+        const technicalDetails = `Ruxsat yo'q.\nSizning rolingiz: '${profile.role}'\nTalab qilinadi: 'king'\nUser ID: ${authData.user.id}`;
+        setErrorDetails(technicalDetails);
         await supabase.auth.signOut();
-        throw new Error("Sizning rolingiz ruxsat etilganlar ro'yxatida yo'q.");
+        throw new Error("Sizda admin huquqlari yo'q.");
       }
     } catch (error: any) {
       toast({
@@ -75,7 +82,7 @@ export default function LoginPage() {
         title: "Kirishda xatolik!",
         description: error.message || "Noma'lum xatolik.",
       });
-      if (!errorDetails) setErrorDetails(error.message);
+      console.error('Login Debug:', error);
     } finally {
       setLoading(false);
     }
@@ -145,8 +152,10 @@ export default function LoginPage() {
           {errorDetails && (
             <Alert variant="destructive" className="mt-6 border-2 border-black bg-red-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-2xl">
               <AlertCircle className="h-5 w-5" />
-              <AlertTitle className="font-black uppercase text-xs tracking-widest mb-2">Xatolik Tafsiloti</AlertTitle>
-              <AlertDescription className="font-mono text-[10px] break-all bg-white p-3 border border-black rounded-lg mb-3 max-h-32 overflow-y-auto">
+              <AlertTitle className="font-black uppercase text-xs tracking-widest mb-2 flex items-center gap-2">
+                Texnik Tashxis <Info className="h-3 w-3" />
+              </AlertTitle>
+              <AlertDescription className="font-mono text-[10px] break-all bg-white p-3 border border-black rounded-lg mb-3 max-h-32 overflow-y-auto whitespace-pre-wrap">
                 {errorDetails}
               </AlertDescription>
               <button 
@@ -154,7 +163,7 @@ export default function LoginPage() {
                 onClick={handleCopyError}
                 className="w-full flex items-center justify-center gap-2 bg-black text-white py-2 rounded-xl font-black text-[10px] uppercase hover:bg-gray-800"
               >
-                <Copy className="h-3 w-3" /> Xatolikni nusxalash
+                <Copy className="h-3 w-3" /> Nusxalab olish
               </button>
             </Alert>
           )}

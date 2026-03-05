@@ -2,30 +2,38 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Lock, Mail, ArrowRight, Loader2 } from 'lucide-react';
+import { Lock, Mail, ArrowRight, Loader2, Copy, AlertCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [errorDetails, setErrorDetails] = useState<string | null>(null);
   const router = useRouter();
+
+  const handleCopyError = () => {
+    if (errorDetails) {
+      navigator.clipboard.writeText(errorDetails);
+      toast({ title: "Nusxalandi!", description: "Xatolik tafsilotlari clipboardga saqlandi." });
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
-    
+    setErrorDetails(null);
+
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     if (!supabaseUrl || supabaseUrl.includes('placeholder')) {
-      toast({
-        variant: "destructive",
-        title: "Konfiguratsiya xatosi!",
-        description: "Supabase URL topilmadi. Vercel sozlamalarini tekshiring.",
-      });
+      const msg = "KONFIGURATSIYA XATOSI: Vercel-da NEXT_PUBLIC_SUPABASE_URL topilmadi.";
+      setErrorDetails(msg);
+      toast({ variant: "destructive", title: "Xatolik!", description: msg });
       return;
     }
 
@@ -50,36 +58,31 @@ export default function LoginPage() {
 
       if (profileError || !profile) {
         console.error('Profile fetch error:', profileError);
+        const details = `Profile xatosi: ${profileError?.message || 'Profil topilmadi'}. User ID: ${authData.user.id}`;
+        setErrorDetails(details);
         await supabase.auth.signOut();
-        throw new Error("Sizning profilingiz 'profiles' jadvalida topilmadi. Ma'muriyatga murojaat qiling.");
+        throw new Error("Sizning rolingiz 'profiles' jadvalida topilmadi.");
       }
 
       if (profile.role === 'king') {
-        toast({
-          title: "Xush kelibsiz, Qirol!",
-          description: "Boshqaruv paneliga muvaffaqiyatli kirdingiz.",
-        });
+        toast({ title: "Xush kelibsiz!", description: "Boshqaruv paneliga kirdingiz." });
         router.push('/admin');
       } else {
+        const details = `KIRISH RAD ETILDI: Sizning rolingiz '${profile.role}'. Faqat 'king' ruxsat etiladi.`;
+        setErrorDetails(details);
         await supabase.auth.signOut();
-        toast({
-          variant: "destructive",
-          title: "Kirish rad etildi!",
-          description: `Sizning rolingiz: ${profile.role}. Faqat 'king' roliga ega foydalanuvchilar kira oladi.`,
-        });
+        toast({ variant: "destructive", title: "Ruxsat yo'q!", description: details });
       }
     } catch (error: any) {
-      console.error('Login detailed error:', error);
-      let errorMsg = error.message || "Login yoki parol noto'g'ri.";
+      console.error('Login error details:', error);
+      const errorMessage = error.message || "Noma'lum xatolik yuz berdi.";
+      const technicalDetails = `Msg: ${errorMessage}\nCode: ${error.code || 'N/A'}\nStatus: ${error.status || 'N/A'}\nURL: ${process.env.NEXT_PUBLIC_SUPABASE_URL}`;
       
-      if (errorMsg === 'Failed to fetch') {
-        errorMsg = "Internet aloqasi yoki Supabase URL xatosi. Iltimos, Vercel-dagi URL to'g'riligini (https:// bilan boshlanishini) tekshiring.";
-      }
-
+      setErrorDetails(technicalDetails);
       toast({
         variant: "destructive",
-        title: "Xatolik!",
-        description: errorMsg,
+        title: "Kirishda xatolik!",
+        description: errorMessage,
       });
     } finally {
       setLoading(false);
@@ -152,6 +155,25 @@ export default function LoginPage() {
           >
             {loading ? <Loader2 className="h-8 w-8 animate-spin" /> : <>KIRISH <ArrowRight className="h-8 w-8" /></>}
           </button>
+
+          {errorDetails && (
+            <div className="mt-6 animate-in slide-in-from-top-2 duration-300">
+              <Alert variant="destructive" className="border-2 border-black bg-red-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-2xl">
+                <AlertCircle className="h-5 w-5" />
+                <AlertTitle className="font-black uppercase text-xs tracking-widest mb-2">Texnik Xatolik Tafsiloti</AlertTitle>
+                <AlertDescription className="font-mono text-[10px] break-all bg-white p-3 border border-black rounded-lg mb-3 max-h-32 overflow-y-auto">
+                  {errorDetails}
+                </AlertDescription>
+                <button 
+                  type="button"
+                  onClick={handleCopyError}
+                  className="w-full flex items-center justify-center gap-2 bg-black text-white py-2 rounded-xl font-black text-[10px] uppercase hover:bg-gray-800 transition-colors"
+                >
+                  <Copy className="h-3 w-3" /> Xatolikni nusxalash
+                </button>
+              </Alert>
+            </div>
+          )}
         </form>
       </div>
     </div>

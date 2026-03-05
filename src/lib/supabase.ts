@@ -4,17 +4,26 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 
-// URL oxirida ortiqcha / bo'lsa uni olib tashlash
-const cleanUrl = supabaseUrl?.endsWith('/') ? supabaseUrl.slice(0, -1) : supabaseUrl;
+// URL formatini tekshirish va tozalash
+const getCleanUrl = (url?: string) => {
+  if (!url) return 'https://placeholder.supabase.co';
+  let clean = url.endsWith('/') ? url.slice(0, -1) : url;
+  if (!clean.startsWith('http')) {
+    clean = `https://${clean}`;
+  }
+  return clean;
+};
 
-if (!cleanUrl || !supabaseAnonKey) {
+const cleanUrl = getCleanUrl(supabaseUrl);
+
+if (!supabaseUrl || !supabaseAnonKey) {
   if (typeof window !== 'undefined') {
-    console.error('Supabase configuration missing! Please check Vercel environment variables.');
+    console.warn('Supabase config missing. URL:', supabaseUrl ? 'Set' : 'Missing', 'Key:', supabaseAnonKey ? 'Set' : 'Missing');
   }
 }
 
 export const supabase = createClient(
-  cleanUrl || 'https://placeholder.supabase.co', 
+  cleanUrl, 
   supabaseAnonKey || 'placeholder',
   {
     auth: {

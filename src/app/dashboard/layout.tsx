@@ -33,6 +33,7 @@ export default function DashboardLayout({
           .maybeSingle();
 
         if (error || !profile || profile.role !== 'king') {
+          console.error('Unauthorized access attempt:', error || 'Profile/Role mismatch');
           await supabase.auth.signOut();
           router.replace('/login');
           return;
@@ -40,6 +41,7 @@ export default function DashboardLayout({
 
         setLoading(false);
       } catch (err) {
+        console.error('Dashboard layout error:', err);
         router.replace('/login');
       }
     };

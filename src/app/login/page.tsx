@@ -32,47 +32,42 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // 1. Auth tekshiruvi
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (authError) {
-        setErrorDetails(`Auth Xatosi: ${authError.message}\nKodi: ${authError.status}`);
+        setErrorDetails(`Auth Xatosi: ${authError.message}`);
         throw authError;
       }
       
       if (!authData.user) throw new Error("Foydalanuvchi topilmadi.");
 
-      // 2. Profiles jadvalidan 'king' rolini tekshirish
+      // Xavfsizlik uchun faqat kerakli ustunlarni tanlab olamiz
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('id, role')
+        .select('role')
         .eq('id', authData.user.id)
         .maybeSingle();
 
       if (profileError) {
-        const technicalDetails = `Jadval: profiles\nID: ${authData.user.id}\nXato: ${profileError.message}\nKodi: ${profileError.code}`;
-        setErrorDetails(technicalDetails);
+        setErrorDetails(`Profil yuklash xatosi: ${profileError.message}`);
         await supabase.auth.signOut();
-        throw new Error("Profil ma'lumotlarini yuklashda baza xatoligi yuz berdi.");
+        throw new Error("Profil ma'lumotlarini yuklashda xatolik yuz berdi.");
       }
 
       if (!profile) {
-        const technicalDetails = `Foydalanuvchi topildi, lekin profiles jadvalida ushbu ID uchun qator (row) yo'q.\nUser ID: ${authData.user.id}\nMaslahat: Supabase profiles jadvalida ushbu ID bilan yangi qator qo'shing.`;
-        setErrorDetails(technicalDetails);
+        setErrorDetails(`Profil topilmadi. User ID: ${authData.user.id}`);
         await supabase.auth.signOut();
         throw new Error("Profilingiz tizimda topilmadi.");
       }
 
-      // 3. 'king' rolini tekshirish
       if (profile.role === 'king') {
         toast({ title: "Xush kelibsiz!", description: "Boshqaruv paneliga kirdingiz." });
         router.push('/dashboard');
       } else {
-        const technicalDetails = `Ruxsat yo'q.\nSizning rolingiz: '${profile.role}'\nTalab qilinadi: 'king'\nUser ID: ${authData.user.id}`;
-        setErrorDetails(technicalDetails);
+        setErrorDetails(`Ruxsat rad etildi. Rol: '${profile.role}'. Talab qilinadi: 'king'`);
         await supabase.auth.signOut();
         throw new Error("Sizda admin huquqlari yo'q.");
       }
@@ -82,7 +77,6 @@ export default function LoginPage() {
         title: "Kirishda xatolik!",
         description: error.message || "Noma'lum xatolik.",
       });
-      console.error('Login Debug:', error);
     } finally {
       setLoading(false);
     }
@@ -96,7 +90,7 @@ export default function LoginPage() {
             FOODLY<span className="text-primary">KING</span>
           </h1>
           <div className="mt-4 inline-block bg-secondary text-white px-6 py-2 border-4 border-black font-black text-[10px] uppercase tracking-[0.3em] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-            MAXFIY BOSHQARUV PORTALI
+            MAXFIY PORTAL
           </div>
         </div>
 

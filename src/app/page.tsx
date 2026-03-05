@@ -8,12 +8,9 @@ export default function RootPage() {
   const router = useRouter();
 
   useEffect(() => {
+    // Ildiz sahifaga kirganda darhol login sahifasiga yo'naltiramiz
     router.replace('/login');
   }, [router]);
 
-  return (
-    <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center font-black uppercase text-xs tracking-widest animate-pulse">
-      Yuklanmoqda...
-    </div>
-  );
+  return null;
 }

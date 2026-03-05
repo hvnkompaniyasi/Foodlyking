@@ -18,11 +18,10 @@ import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 
 const navItems = [
-  { name: 'Boshqaruv paneli', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Taomlar', href: '/dashboard/foods', icon: UtensilsCrossed },
   { name: 'Kategoriyalar', href: '/dashboard/categories', icon: Layers },
   { name: 'Buyurtmalar', href: '/dashboard/orders', icon: ClipboardList },
-  { name: 'Mijozlar', href: '/dashboard/customers', icon: Users },
   { name: 'Sozlamalar', href: '/dashboard/settings', icon: Settings },
 ];
 
@@ -61,7 +60,7 @@ export function DashboardSidebar({ onClose, className }: SidebarProps) {
       <nav className="flex-1 px-4 space-y-3">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/dashboard');
+          const isActive = pathname === item.href;
           return (
             <Link 
               key={item.href} 
@@ -87,7 +86,7 @@ export function DashboardSidebar({ onClose, className }: SidebarProps) {
           className="w-full flex items-center gap-3 px-6 py-5 rounded-2xl bg-red-50 text-red-500 border-2 border-red-500 font-black text-xs uppercase tracking-wider shadow-[4px_4px_0px_0px_rgba(239,68,68,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
         >
           <LogOut className="h-5 w-5" />
-          <span>Tizimdan chiqish</span>
+          <span>Chiqish</span>
         </button>
       </div>
     </div>

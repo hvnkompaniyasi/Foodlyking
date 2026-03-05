@@ -307,34 +307,38 @@ const Operators = () => {
             {/* Add Operator Modal */}
             <AnimatePresence>
                 {isAddModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setIsAddModalOpen(false)}
-                            className="absolute inset-0 bg-black/60 backdrop-blur-md"
+                            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
                         />
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            initial={{ opacity: 0, scale: 0.9, y: 30 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="relative w-full max-w-lg bg-white rounded-4xl shadow-2xl overflow-hidden"
+                            exit={{ opacity: 0, scale: 0.9, y: 30 }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                            className="relative w-full max-w-md bg-white rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.2)] overflow-hidden"
                         >
-                            <div className="p-10 border-b border-gray-50 flex items-center justify-between">
+                            <div className="p-8 pb-4 border-b border-gray-50 flex items-center justify-between">
                                 <h3 className="text-2xl font-black tracking-tighter">Yangi operator</h3>
-                                <button onClick={() => setIsAddModalOpen(false)} className="text-gray-300 hover:text-black transition-colors">
-                                    <X size={28} />
+                                <button
+                                    onClick={() => setIsAddModalOpen(false)}
+                                    className="w-10 h-10 flex items-center justify-center rounded-full text-gray-300 hover:text-black hover:bg-gray-50 transition-all"
+                                >
+                                    <X size={24} />
                                 </button>
                             </div>
 
-                            <form onSubmit={handleAddOperator} className="p-10 space-y-6">
+                            <form onSubmit={handleAddOperator} className="p-8 space-y-5">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">To'liq ismi</label>
                                     <input
                                         type="text"
                                         placeholder="Ali Valiyev"
-                                        className="premium-input !py-4.5"
+                                        className="premium-input !py-4"
                                         value={formData.full_name}
                                         onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                                         required
@@ -345,7 +349,7 @@ const Operators = () => {
                                     <input
                                         type="tel"
                                         placeholder="+998-XX-XXX-XX-XX"
-                                        className="premium-input !py-4.5 font-mono"
+                                        className="premium-input !py-4 font-mono text-sm"
                                         value={formData.phone_number}
                                         onChange={handlePhoneChange}
                                         required
@@ -356,7 +360,7 @@ const Operators = () => {
                                     <input
                                         type="email"
                                         placeholder="operator@foodlyking.com"
-                                        className="premium-input !py-4.5"
+                                        className="premium-input !py-4"
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                         required
@@ -367,7 +371,7 @@ const Operators = () => {
                                     <input
                                         type="password"
                                         placeholder="••••••••"
-                                        className="premium-input !py-4.5"
+                                        className="premium-input !py-4"
                                         value={formData.password}
                                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                         required
@@ -375,17 +379,17 @@ const Operators = () => {
                                 </div>
 
                                 {formError && (
-                                    <div className="p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold border border-red-100 flex items-center gap-2">
-                                        <X size={14} />
+                                    <div className="p-4 bg-red-50 text-red-600 rounded-2xl text-[10px] font-bold border border-red-100 flex items-center gap-2">
+                                        <X size={12} />
                                         {formError}
                                     </div>
                                 )}
 
-                                <div className="pt-6 flex gap-4">
+                                <div className="pt-4">
                                     <Button
                                         type="submit"
                                         loading={formLoading}
-                                        className="flex-1 !py-5 uppercase tracking-widest font-black text-xs"
+                                        className="!py-4.5 uppercase tracking-widest font-black text-xs shadow-lg hover:shadow-black/20"
                                     >
                                         Saqlash
                                     </Button>

@@ -39,45 +39,61 @@ const DashboardLayout = () => {
     { icon: PieChart, label: 'Statistika', path: '/stats' },
   ]
 
-  const SidebarContent = ({ collapsed = false }) => (
+  const SidebarContent = ({ collapsed = false, isMobile = false }) => (
     <div className="flex flex-col h-full bg-white border-r border-gray-100 shadow-[25px_0_60px_-15px_rgba(0,0,0,0.05)] transition-all duration-300 relative z-[1001] !opacity-100">
-      <div className={`p-8 mb-4 flex items-center ${collapsed ? 'justify-center' : 'justify-between'}`}>
+      {/* Logo Area */}
+      <div className={`p-10 mb-2 flex items-center ${collapsed ? 'justify-center' : 'justify-between'} relative`}>
         {!collapsed && (
           <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-black tracking-tighter-premium leading-none">Foodly</h2>
-            <div className="bg-black text-white px-3 py-1 rounded-xl shadow-lg shadow-black/20">
+            <h2 className="text-3xl font-black tracking-tighter-premium leading-none">Foodly</h2>
+            <div className="bg-black text-white px-3 py-1.5 rounded-2xl shadow-[0_10px_20px_rgba(0,0,0,0.3)]">
               <span className="text-[10px] font-black uppercase tracking-widest">King</span>
             </div>
           </div>
         )}
-        {collapsed && (
-          <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white text-lg font-black shadow-lg shadow-black/20">F</div>
+        {collapsed && !isMobile && (
+          <div className="w-14 h-14 bg-black rounded-3xl flex items-center justify-center text-white text-xl font-black shadow-xl">F</div>
+        )}
+
+        {/* Mobile Close Button (Inside the header area) */}
+        {isMobile && (
+          <button
+            onClick={() => setIsMobileOpen(false)}
+            className="p-2 text-gray-300 hover:text-black hover:bg-gray-50 rounded-full transition-all"
+          >
+            <X size={24} />
+          </button>
         )}
       </div>
 
-      <nav className="flex-1 px-4 space-y-2">
+      <div className="px-4 mb-4">
+        <div className="h-[1px] bg-gray-50 w-full" />
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 px-6 mt-6 space-y-3">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path
           return (
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-300 group relative ${isActive
-                ? 'bg-black text-white shadow-2xl shadow-black/20'
-                : 'text-gray-400 hover:bg-gray-50 hover:text-black'
+              className={`flex items-center gap-5 px-5 py-4-5 rounded-[1.5rem] transition-all duration-300 group relative ${isActive
+                ? 'bg-black text-white shadow-[0_20px_40px_rgba(0,0,0,0.2)] scale-[1.02]'
+                : 'text-gray-400 hover:bg-gray-50 hover:text-black hover:translate-x-1'
                 }`}
             >
-              <item.icon size={20} className={isActive ? 'text-white' : 'text-gray-400 group-hover:text-black transition-colors'} />
+              <item.icon size={22} className={isActive ? 'text-white' : 'text-gray-400 group-hover:text-black transition-colors'} />
               {!collapsed && (
                 <motion.span
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="font-black text-sm tracking-tight"
+                  className="font-black text-[13px] tracking-tight uppercase"
                 >
                   {item.label}
                 </motion.span>
               )}
-              {collapsed && (
+              {collapsed && !isMobile && (
                 <div className="absolute left-full ml-6 px-4 py-2 bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50 whitespace-nowrap shadow-xl">
                   {item.label}
                 </div>
@@ -87,14 +103,17 @@ const DashboardLayout = () => {
         })}
       </nav>
 
-      <div className="p-4 mt-auto border-t border-gray-50">
-        <button
-          onClick={handleLogout}
-          className={`flex items-center gap-4 px-4 py-4 w-full rounded-2xl text-red-500 hover:bg-red-50 transition-all duration-300 font-black text-sm tracking-tight ${collapsed ? 'justify-center' : ''}`}
-        >
-          <LogOut size={20} />
-          {!collapsed && <span>Chiqish</span>}
-        </button>
+      {/* Logout Area at the Bottom */}
+      <div className="p-6 mt-auto">
+        <div className="p-4 bg-gray-50/50 rounded-[2rem] border border-gray-100">
+          <button
+            onClick={handleLogout}
+            className={`flex items-center gap-4 px-5 py-4 w-full rounded-2xl text-red-500 hover:bg-white hover:shadow-xl hover:shadow-red-500/10 transition-all duration-300 font-black text-xs tracking-widest uppercase ${collapsed ? 'justify-center' : ''}`}
+          >
+            <LogOut size={20} />
+            {!collapsed && <span>Chiqish</span>}
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -103,7 +122,7 @@ const DashboardLayout = () => {
     <div className="flex min-h-screen bg-[#f9fafb]">
       {/* Desktop Sidebar */}
       <motion.aside
-        animate={{ width: isCollapsed ? 80 : 288 }}
+        animate={{ width: isCollapsed ? 100 : 320 }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
         className="hidden lg:block fixed left-0 top-0 h-screen z-[1001]"
       >
@@ -111,9 +130,9 @@ const DashboardLayout = () => {
           <SidebarContent collapsed={isCollapsed} />
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="absolute -right-3 top-20 w-6 h-6 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform z-[1002]"
+            className="absolute -right-4 top-24 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-[1002]"
           >
-            {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+            {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
           </button>
         </div>
       </motion.aside>
@@ -134,15 +153,9 @@ const DashboardLayout = () => {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="lg:hidden fixed left-0 top-0 h-screen w-[280px] z-[2001] shadow-[50px_0_100px_rgba(0,0,0,0.3)] bg-white"
+              className="lg:hidden fixed left-0 top-0 h-screen w-[300px] z-[2001] shadow-[50px_0_100px_rgba(0,0,0,0.3)] bg-white"
             >
-              <SidebarContent />
-              <button
-                onClick={() => setIsMobileOpen(false)}
-                className="absolute right-4 top-4 p-2 text-gray-400 hover:text-black transition-colors"
-              >
-                <X size={24} />
-              </button>
+              <SidebarContent isMobile={true} />
             </motion.aside>
           </>
         )}

@@ -174,7 +174,7 @@ const AddOperator = () => {
                             <Button
                                 type="submit"
                                 loading={loading}
-                                className="!w-auto !px-12 !py-4.5 uppercase tracking-widest font-black text-xs shadow-xl shadow-black/10"
+                                className="!w-auto !px-12 !py-4-5 uppercase tracking-widest font-black text-xs shadow-xl shadow-black/10"
                             >
                                 Operatorni saqlash
                             </Button>

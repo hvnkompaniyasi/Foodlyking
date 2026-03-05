@@ -1,24 +1,16 @@
-# Foodly King - Maxfiy Boshqaruv Paneli
+# React + Vite
 
-Ushbu loyiha Foodly King tizimi uchun maxsus 2D Flat (Neo-brutalist) uslubida yaratilgan maxfiy portaldir.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Vercel Sozlamalari (Environment Variables)
-Loyihani Vercel-ga yuklaganingizdan so'ng, **Settings -> Environment Variables** bo'limiga quyidagi o'zgaruvchilarni qo'shing:
+Currently, two official plugins are available:
 
-| Kalit (Key) | Qiymat (Value) |
-|-----|---------------------------------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase -> Settings -> API -> Project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase -> Settings -> API -> anon public API Key |
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## GitHub-ga yuklash (Bir qatorli buyruq)
+## React Compiler
 
-Terminalga quyidagilarni nusxalab tashlang va Enter bosing:
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-```bash
-git add . && git commit -m "Update: Login icons and minimalist style" && git push origin main
-```
+## Expanding the ESLint configuration
 
-## Texnologiyalar
-- **Framework:** Next.js 15 (App Router)
-- **Database & Auth:** Supabase
-- **Dizayn:** 2D Flat / Neo-brutalist (To'q sariq, Feruza, Oq)
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.

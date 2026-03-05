@@ -44,7 +44,7 @@ export default function LoginPage() {
       
       if (!authData.user) throw new Error("Foydalanuvchi topilmadi.");
 
-      // Xavfsizlik uchun faqat kerakli ustunlarni tanlab olamiz
+      // Profilni tekshirish
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('role')
@@ -52,13 +52,17 @@ export default function LoginPage() {
         .maybeSingle();
 
       if (profileError) {
-        setErrorDetails(`Profil yuklash xatosi: ${profileError.message}`);
+        let msg = profileError.message;
+        if (msg.includes('infinite recursion')) {
+          msg = "Supabase RLS qoidasida xatolik (Infinite Recursion). Iltimos, Supabase Dashboard-da profiles jadvali uchun 'SELECT' qoidasini 'auth.uid() = id' qilib o'zgartiring.";
+        }
+        setErrorDetails(`Profil yuklash xatosi: ${msg}\nKodni: ${profileError.code}`);
         await supabase.auth.signOut();
-        throw new Error("Profil ma'lumotlarini yuklashda xatolik yuz berdi.");
+        throw new Error("Profil ma'lumotlarini o'qishda xatolik yuz berdi.");
       }
 
       if (!profile) {
-        setErrorDetails(`Profil topilmadi. User ID: ${authData.user.id}`);
+        setErrorDetails(`Profil topilmadi. Profiles jadvalida User ID: ${authData.user.id} bo'lgan qator mavjudligini tekshiring.`);
         await supabase.auth.signOut();
         throw new Error("Profilingiz tizimda topilmadi.");
       }
@@ -67,7 +71,7 @@ export default function LoginPage() {
         toast({ title: "Xush kelibsiz!", description: "Boshqaruv paneliga kirdingiz." });
         router.push('/dashboard');
       } else {
-        setErrorDetails(`Ruxsat rad etildi. Rol: '${profile.role}'. Talab qilinadi: 'king'`);
+        setErrorDetails(`Ruxsat rad etildi. Sizning rolingiz: '${profile.role}'. Faqat 'king' roli kira oladi.`);
         await supabase.auth.signOut();
         throw new Error("Sizda admin huquqlari yo'q.");
       }
@@ -157,7 +161,7 @@ export default function LoginPage() {
                 onClick={handleCopyError}
                 className="w-full flex items-center justify-center gap-2 bg-black text-white py-2 rounded-xl font-black text-[10px] uppercase hover:bg-gray-800"
               >
-                <Copy className="h-3 w-3" /> Nusxalab olish
+                <Copy className="h-3 w-3" /> Xatolikni nusxalash
               </button>
             </Alert>
           )}

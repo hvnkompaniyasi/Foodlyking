@@ -78,14 +78,6 @@ const Dashboard = () => {
                                 </div>
                             ))}
                         </div>
-
-                        <div className="mt-8 pt-6 border-t border-white/10">
-                            <p className="text-[10px] font-black tracking-widest text-gray-500 uppercase">Tizim holati</p>
-                            <div className="flex items-center gap-2 mt-2 font-mono text-xs text-green-400">
-                                <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-                                ONLINE
-                            </div>
-                        </div>
                     </div>
                     <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl pointer-events-none" />
                 </div>

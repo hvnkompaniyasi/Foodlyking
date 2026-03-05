@@ -8,9 +8,6 @@ import {
     Mail,
     ChevronRight,
     BarChart3,
-    ShoppingBag,
-    DollarSign,
-    MoreVertical,
     X,
     Loader2
 } from 'lucide-react'
@@ -28,7 +25,7 @@ const Operators = () => {
     // Form state
     const [formData, setFormData] = useState({
         full_name: '',
-        phone_number: '',
+        phone_number: '+998-',
         email: '',
         password: ''
     })
@@ -57,6 +54,37 @@ const Operators = () => {
         }
     }
 
+    const formatPhoneNumber = (value) => {
+        // Remove all non-digits except the leading +
+        const numbers = value.replace(/[^\d]/g, '');
+        // Ensure it starts with 998
+        let part = numbers.startsWith('998') ? numbers : '998' + numbers;
+
+        let formatted = '+998';
+        if (part.length > 3) {
+            formatted += '-' + part.substring(3, 5);
+        }
+        if (part.length > 5) {
+            formatted += '-' + part.substring(5, 8);
+        }
+        if (part.length > 8) {
+            formatted += '-' + part.substring(8, 10);
+        }
+        if (part.length > 10) {
+            formatted += '-' + part.substring(10, 12);
+        }
+        return formatted.substring(0, 18);
+    }
+
+    const handlePhoneChange = (e) => {
+        const val = e.target.value;
+        if (val.length < 5) {
+            setFormData({ ...formData, phone_number: '+998-' });
+            return;
+        }
+        setFormData({ ...formData, phone_number: formatPhoneNumber(val) });
+    }
+
     const handleAddOperator = async (e) => {
         e.preventDefault()
         setFormLoading(true)
@@ -72,13 +100,14 @@ const Operators = () => {
             if (authError) throw authError
 
             if (authData.user) {
-                // 2. Update profile (the trigger might do this, but we'll be explicit)
+                // 2. Update profile
                 const { error: profileError } = await supabase
                     .from('profiles')
                     .update({
                         full_name: formData.full_name,
                         phone_number: formData.phone_number,
-                        role: 'operator'
+                        role: 'operator',
+                        email: formData.email
                     })
                     .eq('id', authData.user.id)
 
@@ -86,7 +115,7 @@ const Operators = () => {
             }
 
             setIsAddModalOpen(false)
-            setFormData({ full_name: '', phone_number: '', email: '', password: '' })
+            setFormData({ full_name: '', phone_number: '+998-', email: '', password: '' })
             fetchOperators()
         } catch (err) {
             setFormError(err.message)
@@ -102,60 +131,60 @@ const Operators = () => {
     )
 
     return (
-        <div className="space-y-8">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold">Operatorlar</h1>
-                    <p className="text-sm text-gray-500 mt-1">Tizim operatorlarini boshqarish va statistikasini kuzatish</p>
+        <div className="space-y-10 max-w-[1400px] mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-2">
+                <div className="space-y-1">
+                    <h1 className="text-3xl font-black tracking-tighter-premium">Operatorlar</h1>
+                    <p className="text-sm text-gray-500 font-medium tracking-tight">Tizim operatorlarini boshqarish va statistikasini kuzatish</p>
                 </div>
                 <Button
                     onClick={() => setIsAddModalOpen(true)}
-                    className="!w-auto !py-3 !px-6 flex items-center gap-2"
+                    className="!w-auto !py-3 !px-8 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all"
                 >
                     <UserPlus size={18} />
-                    Yangi operator
+                    <span className="uppercase tracking-widest text-[10px] font-black">Yangi operator</span>
                 </Button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                 {/* Operators List */}
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="relative">
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                <div className="lg:col-span-8 space-y-6">
+                    <div className="relative group">
+                        <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-black transition-colors">
                             <Search size={20} />
                         </div>
                         <input
                             type="text"
                             placeholder="Ism, telefon yoki email bo'yicha qidirish..."
-                            className="premium-input !pl-12 !py-4 shadow-sm"
+                            className="premium-input !pl-14 !py-4 shadow-sm bg-white border-transparent focus:border-gray-100"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
 
-                    <div className="premium-card !p-0 overflow-hidden">
+                    <div className="premium-card !p-0 overflow-hidden border border-gray-100 bg-white">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead className="bg-gray-50/50 border-b border-gray-100">
                                     <tr>
-                                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-gray-400">Operator</th>
-                                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-gray-400">Kontakt</th>
-                                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-gray-400">Holat</th>
-                                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-gray-400 text-right">Amallar</th>
+                                        <th className="px-8 py-5 text-xs font-black uppercase tracking-widest text-gray-400">Operator</th>
+                                        <th className="px-8 py-5 text-xs font-black uppercase tracking-widest text-gray-400">Kontakt</th>
+                                        <th className="px-8 py-5 text-xs font-black uppercase tracking-widest text-gray-400">Holat</th>
+                                        <th className="px-8 py-5 text-xs font-black uppercase tracking-widest text-gray-400 text-right">Amallar</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50">
                                     {loading ? (
                                         <tr>
-                                            <td colSpan="4" className="px-6 py-12 text-center text-gray-400">
-                                                <Loader2 className="animate-spin mx-auto mb-2" />
-                                                Yuklanmoqda...
+                                            <td colSpan="4" className="px-8 py-20 text-center text-gray-400">
+                                                <Loader2 className="animate-spin mx-auto mb-4" />
+                                                <p className="text-sm font-bold uppercase tracking-widest">Yuklanmoqda...</p>
                                             </td>
                                         </tr>
                                     ) : filteredOperators.length === 0 ? (
                                         <tr>
-                                            <td colSpan="4" className="px-6 py-12 text-center text-gray-400">
-                                                Hech qanday operator topilmadi
+                                            <td colSpan="4" className="px-8 py-20 text-center text-gray-400">
+                                                <p className="text-sm font-bold uppercase tracking-widest">Hech qanday operator topilmadi</p>
                                             </td>
                                         </tr>
                                     ) : filteredOperators.map((op) => (
@@ -165,36 +194,36 @@ const Operators = () => {
                                                 setSelectedOperator(op)
                                                 setIsStatsOpen(true)
                                             }}
-                                            className="hover:bg-gray-50/50 cursor-pointer transition-colors group"
+                                            className="hover:bg-gray-50/80 cursor-pointer transition-all group"
                                         >
-                                            <td className="px-6 py-5">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center font-bold text-gray-500">
+                                            <td className="px-8 py-6">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-12 h-12 rounded-2xl bg-gray-100 border border-gray-200 flex items-center justify-center font-black text-gray-500 transition-colors group-hover:bg-black group-hover:text-white group-hover:border-black">
                                                         {op.full_name?.[0]?.toUpperCase()}
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-bold">{op.full_name}</p>
-                                                        <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">ID: {op.id.slice(0, 8)}</p>
+                                                        <p className="text-sm font-black">{op.full_name}</p>
+                                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">ID: {op.id.slice(0, 8)}</p>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-5">
-                                                <div className="space-y-1">
-                                                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                                                        <Phone size={12} /> {op.phone_number}
+                                            <td className="px-8 py-6">
+                                                <div className="space-y-1.5">
+                                                    <div className="flex items-center gap-2 text-xs font-bold text-gray-500">
+                                                        <Phone size={14} className="text-gray-300" /> {op.phone_number}
                                                     </div>
-                                                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                                                        <Mail size={12} /> {op.email}
+                                                    <div className="flex items-center gap-2 text-xs font-bold text-gray-400">
+                                                        <Mail size={14} className="text-gray-300" /> {op.email}
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-5">
-                                                <span className="text-[10px] bg-green-50 text-green-600 px-2 py-0.5 rounded-full font-bold">FAOL</span>
+                                            <td className="px-8 py-6">
+                                                <span className="text-[10px] bg-green-50 text-green-600 px-3 py-1 rounded-full font-black uppercase tracking-wider">FAOL</span>
                                             </td>
-                                            <td className="px-6 py-5 text-right">
-                                                <button className="p-2 text-gray-400 hover:text-black transition-colors">
+                                            <td className="px-8 py-6 text-right">
+                                                <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-50 text-gray-400 group-hover:bg-black group-hover:text-white transition-all">
                                                     <ChevronRight size={18} />
-                                                </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
@@ -205,70 +234,74 @@ const Operators = () => {
                 </div>
 
                 {/* Operator Stats Sidebar */}
-                <aside className="space-y-6">
+                <div className="lg:col-span-4">
                     <AnimatePresence mode="wait">
                         {isStatsOpen && selectedOperator ? (
                             <motion.div
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: 20 }}
-                                className="premium-card sticky top-28 bg-black text-white"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 20 }}
+                                className="premium-card sticky top-28 bg-black text-white p-8"
                             >
-                                <div className="flex items-center justify-between mb-8">
-                                    <h3 className="text-lg font-bold">Operator Statistikasi</h3>
+                                <div className="flex items-center justify-between mb-10">
+                                    <h3 className="text-lg font-black tracking-tighter">Statistika</h3>
                                     <button onClick={() => setIsStatsOpen(false)} className="text-gray-500 hover:text-white transition-colors">
                                         <X size={20} />
                                     </button>
                                 </div>
 
-                                <div className="flex items-center gap-4 mb-8">
-                                    <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center text-xl font-bold">
+                                <div className="flex items-center gap-5 mb-10">
+                                    <div className="w-16 h-16 rounded-3xl bg-white/10 flex items-center justify-center text-2xl font-black">
                                         {selectedOperator.full_name?.[0]?.toUpperCase()}
                                     </div>
                                     <div>
-                                        <p className="text-lg font-bold leading-none">{selectedOperator.full_name}</p>
-                                        <p className="text-xs text-gray-500 mt-1">{selectedOperator.phone_number}</p>
+                                        <p className="text-xl font-black leading-none">{selectedOperator.full_name}</p>
+                                        <p className="text-xs font-bold text-gray-500 mt-2">{selectedOperator.phone_number}</p>
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4 mb-8">
-                                    <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-                                        <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Umumiy Buyurtmalar</p>
-                                        <p className="text-xl font-bold">156</p>
+                                <div className="grid grid-cols-1 gap-4 mb-10">
+                                    <div className="p-6 bg-white/5 rounded-3xl border border-white/10 group hover:bg-white/10 transition-colors">
+                                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Umumiy Buyurtmalar</p>
+                                        <div className="flex items-end justify-between">
+                                            <p className="text-3xl font-black">156</p>
+                                            <div className="p-2 bg-white/5 rounded-xl text-gray-400"><ShoppingBag size={16} /></div>
+                                        </div>
                                     </div>
-                                    <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-                                        <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Bugungi Buyurtmalar</p>
-                                        <p className="text-xl font-bold">12</p>
-                                    </div>
-                                    <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-                                        <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Umumiy Summa</p>
-                                        <p className="text-xl font-bold">$12,450</p>
-                                    </div>
-                                    <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-                                        <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Bugungi Summa</p>
-                                        <p className="text-xl font-bold">$840</p>
+                                    <div className="p-6 bg-white/5 rounded-3xl border border-white/10 group hover:bg-white/10 transition-colors">
+                                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Umumiy Summa</p>
+                                        <div className="flex items-end justify-between">
+                                            <p className="text-3xl font-black">$12,450</p>
+                                            <div className="p-2 bg-white/5 rounded-xl text-gray-400"><DollarSign size={16} /></div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className="space-y-4 pt-6 border-t border-white/10">
+                                <div className="space-y-5 pt-8 border-t border-white/10">
                                     <div className="flex items-center justify-between">
-                                        <p className="text-xs font-medium text-gray-500">O'rtacha qiymat</p>
-                                        <p className="text-xs font-bold">$79.80</p>
+                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Bugungi buyurtmalar</p>
+                                        <p className="text-sm font-black text-green-400">12 ta</p>
                                     </div>
                                     <div className="flex items-center justify-between">
-                                        <p className="text-xs font-medium text-gray-500">Oxirgi buyurtma</p>
-                                        <p className="text-xs font-bold text-green-400">10 daqiqa oldin</p>
+                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Bugungi summa</p>
+                                        <p className="text-sm font-black text-green-400">$840.00</p>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">O'rtacha qiymat</p>
+                                        <p className="text-sm font-black">$79.80</p>
                                     </div>
                                 </div>
                             </motion.div>
                         ) : (
-                            <div className="premium-card flex flex-col items-center justify-center py-12 text-center text-gray-400 border-dashed">
+                            <div className="premium-card bg-white flex flex-col items-center justify-center py-20 text-center text-gray-300 border-2 border-dashed border-gray-100">
                                 <BarChart3 size={40} className="mb-4 opacity-20" />
-                                <p className="text-sm font-medium">Statistikani ko'rish uchun<br />operatorni tanlang</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest leading-relaxed">
+                                    Statistikani ko'rish uchun<br />operatorni tanlang
+                                </p>
                             </div>
                         )}
                     </AnimatePresence>
-                </aside>
+                </div>
             </div>
 
             {/* Add Operator Modal */}
@@ -280,61 +313,61 @@ const Operators = () => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setIsAddModalOpen(false)}
-                            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                            className="absolute inset-0 bg-black/60 backdrop-blur-md"
                         />
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden"
+                            className="relative w-full max-w-lg bg-white rounded-4xl shadow-2xl overflow-hidden"
                         >
-                            <div className="p-8 border-b border-gray-100 flex items-center justify-between">
-                                <h3 className="text-xl font-bold">Yangi operator qo'shish</h3>
-                                <button onClick={() => setIsAddModalOpen(false)} className="text-gray-400 hover:text-black transition-colors">
-                                    <X size={24} />
+                            <div className="p-10 border-b border-gray-50 flex items-center justify-between">
+                                <h3 className="text-2xl font-black tracking-tighter">Yangi operator</h3>
+                                <button onClick={() => setIsAddModalOpen(false)} className="text-gray-300 hover:text-black transition-colors">
+                                    <X size={28} />
                                 </button>
                             </div>
 
-                            <form onSubmit={handleAddOperator} className="p-8 space-y-5">
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">To'liq ismi</label>
+                            <form onSubmit={handleAddOperator} className="p-10 space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">To'liq ismi</label>
                                     <input
                                         type="text"
-                                        placeholder="E.g. Ali Valiyev"
-                                        className="premium-input !py-3.5"
+                                        placeholder="Ali Valiyev"
+                                        className="premium-input !py-4.5"
                                         value={formData.full_name}
                                         onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                                         required
                                     />
                                 </div>
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Telefon raqami</label>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Telefon raqami</label>
                                     <input
                                         type="tel"
-                                        placeholder="+998 90 123 45 67"
-                                        className="premium-input !py-3.5"
+                                        placeholder="+998-XX-XXX-XX-XX"
+                                        className="premium-input !py-4.5 font-mono"
                                         value={formData.phone_number}
-                                        onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
+                                        onChange={handlePhoneChange}
                                         required
                                     />
                                 </div>
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Email manzili</label>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Email manzili</label>
                                     <input
                                         type="email"
                                         placeholder="operator@foodlyking.com"
-                                        className="premium-input !py-3.5"
+                                        className="premium-input !py-4.5"
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                         required
                                     />
                                 </div>
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Parol</label>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Parol</label>
                                     <input
                                         type="password"
                                         placeholder="••••••••"
-                                        className="premium-input !py-3.5"
+                                        className="premium-input !py-4.5"
                                         value={formData.password}
                                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                         required
@@ -342,25 +375,19 @@ const Operators = () => {
                                 </div>
 
                                 {formError && (
-                                    <div className="p-4 bg-red-50 text-red-600 rounded-xl text-xs font-bold border border-red-100 italic">
-                                        Xatolik: {formError}
+                                    <div className="p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold border border-red-100 flex items-center gap-2">
+                                        <X size={14} />
+                                        {formError}
                                     </div>
                                 )}
 
-                                <div className="pt-4 flex gap-3">
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsAddModalOpen(false)}
-                                        className="flex-1 py-4 text-sm font-bold border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors"
-                                    >
-                                        Bekor qilish
-                                    </button>
+                                <div className="pt-6 flex gap-4">
                                     <Button
                                         type="submit"
                                         loading={formLoading}
-                                        className="flex-1 !py-4"
+                                        className="flex-1 !py-5 uppercase tracking-widest font-black text-xs"
                                     >
-                                        Qo'shish
+                                        Saqlash
                                     </Button>
                                 </div>
                             </form>

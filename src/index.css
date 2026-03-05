@@ -166,9 +166,30 @@ button {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
+  .lg\:col-span-12 {
+    grid-column: span 12 / span 12;
+  }
+
+  .lg\:col-span-8 {
+    grid-column: span 8 / span 8;
+  }
+
+  .lg\:col-span-4 {
+    grid-column: span 4 / span 4;
+  }
+
   .lg\:col-span-2 {
     grid-column: span 2 / span 2;
   }
+}
+
+.max-w-\[1400px\] {
+  max-width: 1400px;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Sizing */
@@ -471,8 +492,12 @@ button {
   border-radius: 0.75rem;
 }
 
-.rounded-2xl {
-  border-radius: 1rem;
+.rounded-3xl {
+  border-radius: 1.5rem;
+}
+
+.rounded-4xl {
+  border-radius: 2rem;
 }
 
 .rounded-full {

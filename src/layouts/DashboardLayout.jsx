@@ -19,7 +19,6 @@ const DashboardLayout = () => {
     { icon: Package, label: 'Buyurtmalar', path: '/orders' },
     { icon: Users, label: 'Operatorlar', path: '/operators' },
     { icon: PieChart, label: 'Statistika', path: '/stats' },
-    { icon: Settings, label: 'Sozlamalar', path: '/settings' },
   ]
 
   return (

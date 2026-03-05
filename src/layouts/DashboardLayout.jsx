@@ -40,7 +40,7 @@ const DashboardLayout = () => {
   ]
 
   const SidebarContent = ({ collapsed = false }) => (
-    <div className="flex flex-col h-full bg-white border-r border-gray-100 shadow-[25px_0_60px_-15px_rgba(0,0,0,0.05)] transition-all duration-300 relative z-[10]">
+    <div className="flex flex-col h-full bg-white border-r border-gray-100 shadow-[25px_0_60px_-15px_rgba(0,0,0,0.05)] transition-all duration-300 relative z-[1001] !opacity-100">
       <div className={`p-8 mb-4 flex items-center ${collapsed ? 'justify-center' : 'justify-between'}`}>
         {!collapsed && (
           <div className="flex items-center gap-2">

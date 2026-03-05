@@ -1,13 +1,30 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
-import { LayoutDashboard, LogOut, Package, Users, Settings, PieChart } from 'lucide-react'
+import {
+  LayoutDashboard,
+  LogOut,
+  Package,
+  Users,
+  PieChart,
+  Menu as MenuIcon,
+  X,
+  ChevronLeft,
+  ChevronRight
+} from 'lucide-react'
 
 const DashboardLayout = () => {
   const { signOut, user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isMobileOpen, setIsMobileOpen] = useState(false)
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMobileOpen(false)
+  }, [location.pathname])
 
   const handleLogout = async () => {
     await signOut()
@@ -18,76 +35,147 @@ const DashboardLayout = () => {
     { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
     { icon: Package, label: 'Buyurtmalar', path: '/orders' },
     { icon: Users, label: 'Operatorlar', path: '/operators' },
+    { icon: Users, label: 'Mijozlar', path: '/customers' },
     { icon: PieChart, label: 'Statistika', path: '/stats' },
   ]
 
+  const SidebarContent = ({ collapsed = false }) => (
+    <div className="flex flex-col h-full bg-white border-r border-gray-100 shadow-sm transition-all duration-300">
+      <div className={`p-6 flex items-center ${collapsed ? 'justify-center' : 'justify-between'}`}>
+        {!collapsed && (
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-black tracking-tighter-premium leading-none">Foodly</h2>
+            <span className="text-[10px] bg-black text-white px-2 py-0.5 rounded-full font-black uppercase tracking-widest">King</span>
+          </div>
+        )}
+        {collapsed && (
+          <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white text-xs font-black">F</div>
+        )}
+      </div>
+
+      <nav className="flex-1 px-3 mt-4 space-y-1">
+        {menuItems.map((item) => {
+          const isActive = location.pathname === item.path
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`flex items-center gap-3 px-3 py-3 rounded-2xl transition-all duration-300 group relative ${isActive
+                ? 'bg-black text-white shadow-xl shadow-black/10'
+                : 'text-gray-400 hover:bg-gray-50 hover:text-black'
+                }`}
+            >
+              <item.icon size={20} className={isActive ? 'text-white' : 'text-gray-400 group-hover:text-black transition-colors'} />
+              {!collapsed && (
+                <motion.span
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="font-bold text-sm"
+                >
+                  {item.label}
+                </motion.span>
+              )}
+              {collapsed && (
+                <div className="absolute left-full ml-4 px-3 py-2 bg-black text-white text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 whitespace-nowrap">
+                  {item.label}
+                </div>
+              )}
+            </Link>
+          )
+        })}
+      </nav>
+
+      <div className="p-3 border-t border-gray-50 mb-6">
+        <button
+          onClick={handleLogout}
+          className={`flex items-center gap-3 px-3 py-3 w-full rounded-2xl text-red-500 hover:bg-red-50 transition-all duration-300 font-bold text-sm ${collapsed ? 'justify-center' : ''}`}
+        >
+          <LogOut size={20} />
+          {!collapsed && <span>Chiqish</span>}
+        </button>
+      </div>
+    </div>
+  )
+
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className="w-72 bg-white border-r border-gray-100 flex flex-col sticky top-0 h-screen">
-        <div className="p-8">
-          <h2 className="text-xl font-bold tracking-tighter">Foodly King</h2>
-          <span className="text-xs bg-black text-white px-2 py-0-5 rounded-full font-bold ml-1">ADMIN</span>
-        </div>
-
-        <nav className="flex-1 px-4 space-y-1">
-          {menuItems.map((item) => {
-            const isActive = location.pathname === item.path
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive
-                  ? 'bg-black text-white shadow-lg shadow-black/10'
-                  : 'text-gray-500 hover:bg-gray-100'
-                  }`}
-              >
-                <item.icon size={20} className={isActive ? 'text-white' : 'text-gray-400 group-hover:text-black'} />
-                <span className="font-semibold text-sm">{item.label}</span>
-              </Link>
-            )
-          })}
-        </nav>
-
-        <div className="p-4 border-t border-gray-100">
+    <div className="flex min-h-screen bg-[#f9fafb]">
+      {/* Desktop Sidebar */}
+      <motion.aside
+        animate={{ width: isCollapsed ? 80 : 288 }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        className="hidden lg:block fixed left-0 top-0 h-screen z-40"
+      >
+        <div className="relative h-full">
+          <SidebarContent collapsed={isCollapsed} />
           <button
-            onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-red-500 hover:bg-red-50 transition-colors font-semibold text-sm"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="absolute -right-3 top-20 w-6 h-6 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform z-50"
           >
-            <LogOut size={20} />
-            Chiqish
+            {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
           </button>
         </div>
-      </aside>
+      </motion.aside>
+
+      {/* Mobile Sidebar (Slide-in) */}
+      <AnimatePresence>
+        {isMobileOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileOpen(false)}
+              className="lg:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-[100]"
+            />
+            <motion.aside
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="lg:hidden fixed left-0 top-0 h-screen w-[280px] z-[101] shadow-2xl"
+            >
+              <SidebarContent />
+              <button
+                onClick={() => setIsMobileOpen(false)}
+                className="absolute right-4 top-4 p-2 text-gray-400 hover:text-black transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
-        <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-10 sticky top-0 z-10">
-          <h1 className="text-lg font-bold">
-            {menuItems.find(i => i.path === location.pathname)?.label || 'Dashboard'}
-          </h1>
+      <div className={`flex-1 flex flex-col transition-all duration-300 ${isCollapsed ? 'lg:ml-20' : 'lg:ml-72'}`}>
+        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100/50 flex items-center justify-between px-6 lg:px-10 sticky top-0 z-30">
           <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-sm font-bold leading-none">{user?.email?.split('@')[0]}</p>
-              <p className="text-xs text-gray-500 mt-1">Super Admin</p>
+            <button
+              onClick={() => setIsMobileOpen(true)}
+              className="lg:hidden p-2 text-gray-500 hover:text-black hover:bg-gray-50 rounded-xl transition-all"
+            >
+              <MenuIcon size={24} />
+            </button>
+            <h1 className="text-xl font-black tracking-tighter-premium">
+              {menuItems.find(i => i.path === location.pathname)?.label || 'Dashboard'}
+            </h1>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:block text-right">
+              <p className="text-sm font-black leading-none">{user?.email?.split('@')[0]}</p>
+              <p className="text-[10px] font-bold text-gray-500 mt-1 uppercase tracking-widest leading-none">Super Admin</p>
             </div>
-            <div className="w-10 h-10 bg-gray-100 rounded-full border border-gray-200 flex items-center justify-center font-bold">
+            <div className="w-10 h-10 bg-gray-50 border border-gray-100 rounded-2xl flex items-center justify-center font-black text-gray-700 shadow-sm overflow-hidden group hover:border-black transition-all cursor-pointer">
               {user?.email?.[0].toUpperCase()}
             </div>
           </div>
         </header>
 
-        <div className="p-10">
-          <motion.div
-            key={location.pathname}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Outlet />
-          </motion.div>
+        <div className="p-6 lg:p-10 flex-1">
+          <Outlet />
         </div>
-      </main>
+      </div>
     </div>
   )
 }

@@ -7,6 +7,7 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Operators from './pages/Operators'
 import AddOperator from './pages/AddOperator'
+import Customers from './pages/Customers'
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/operators" element={<Operators />} />
               <Route path="/operators/add" element={<AddOperator />} />
+              <Route path="/customers" element={<Customers />} />
               {/* Other routes can be added here */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>

@@ -58,7 +58,7 @@ const Dashboard = () => {
                         <p className="text-gray-400 text-sm leading-relaxed mb-8">
                             Bugungi barcha buyurtmalar sifatli va tez yetkazilishi shart. Maxfiylikni saqlang.
                         </p>
-                        <div className="pt-4 border-t border-white/10">
+                        <div className="pt-4 border-t border-white-10">
                             <p className="text-xs font-bold text-gray-500 uppercase">Tizim holati</p>
                             <div className="flex items-center gap-2 mt-2 font-mono text-sm text-green-400">
                                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />

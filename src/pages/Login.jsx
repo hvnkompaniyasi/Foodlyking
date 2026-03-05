@@ -39,7 +39,7 @@ const Login = () => {
             >
                 <div className="text-center mb-10">
                     <h1 className="text-4xl font-black tracking-tighter-premium mb-2">Foodly King</h1>
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-[0.3em]">Admin Panel Access</p>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest-extra">Admin Panel Access</p>
                 </div>
 
                 <form onSubmit={handleLogin} className="space-y-4">

@@ -28,7 +28,7 @@ const DashboardLayout = () => {
       <aside className="w-72 bg-white border-r border-gray-100 flex flex-col sticky top-0 h-screen">
         <div className="p-8">
           <h2 className="text-xl font-bold tracking-tighter">Foodly King</h2>
-          <span className="text-[10px] bg-black text-white px-2 py-0.5 rounded-full font-bold ml-1">ADMIN</span>
+          <span className="text-xs bg-black text-white px-2 py-0-5 rounded-full font-bold ml-1">ADMIN</span>
         </div>
 
         <nav className="flex-1 px-4 space-y-1">
@@ -39,8 +39,8 @@ const DashboardLayout = () => {
                 key={item.path}
                 to={item.path}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive
-                    ? 'bg-black text-white shadow-lg shadow-black/10'
-                    : 'text-gray-500 hover:bg-gray-100'
+                  ? 'bg-black text-white shadow-lg shadow-black/10'
+                  : 'text-gray-500 hover:bg-gray-100'
                   }`}
               >
                 <item.icon size={20} className={isActive ? 'text-white' : 'text-gray-400 group-hover:text-black'} />

@@ -29,9 +29,10 @@ export default function AdminLayout({
           .from('profiles')
           .select('role')
           .eq('id', session.user.id)
-          .single();
+          .maybeSingle();
 
-        if (error || profile?.role !== 'king') {
+        if (error || !profile || profile.role !== 'king') {
+          console.error('Auth guard rejection:', error || 'Profile not found or not king');
           await supabase.auth.signOut();
           router.push('/');
           return;
@@ -39,6 +40,7 @@ export default function AdminLayout({
 
         setLoading(false);
       } catch (err) {
+        console.error('Auth guard system error:', err);
         router.push('/');
       }
     };

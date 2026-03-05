@@ -31,7 +31,7 @@ export default function LoginPage() {
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     if (!supabaseUrl || supabaseUrl.includes('placeholder')) {
-      const msg = "KONFIGURATSIYA XATOSI: Vercel-da NEXT_PUBLIC_SUPABASE_URL topilmadi.";
+      const msg = "KONFIGURATSIYA XATOSI: NEXT_PUBLIC_SUPABASE_URL topilmadi.";
       setErrorDetails(msg);
       toast({ variant: "destructive", title: "Xatolik!", description: msg });
       return;
@@ -52,13 +52,20 @@ export default function LoginPage() {
       // Profiles jadvalidan rolni tekshirish
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('role')
+        .select('id, role')
         .eq('id', authData.user.id)
-        .single();
+        .maybeSingle(); // .single() o'rniga .maybeSingle() ishlatamiz, xatolik chiqmasligi uchun
 
-      if (profileError || !profile) {
+      if (profileError) {
         console.error('Profile fetch error:', profileError);
-        const details = `Profile xatosi: ${profileError?.message || 'Profil topilmadi'}. User ID: ${authData.user.id}`;
+        const details = `Baza xatosi: ${profileError.message}\nKodi: ${profileError.code}\nUser ID: ${authData.user.id}`;
+        setErrorDetails(details);
+        await supabase.auth.signOut();
+        throw new Error("Profil ma'lumotlarini olishda xatolik yuz berdi.");
+      }
+
+      if (!profile) {
+        const details = `PROFIL TOPILMADI: 'profiles' jadvalida ID=${authData.user.id} bo'lgan qator yo'q. Iltimos, Supabase Dashboard-da profil yarating.`;
         setErrorDetails(details);
         await supabase.auth.signOut();
         throw new Error("Sizning rolingiz 'profiles' jadvalida topilmadi.");
@@ -76,9 +83,11 @@ export default function LoginPage() {
     } catch (error: any) {
       console.error('Login error details:', error);
       const errorMessage = error.message || "Noma'lum xatolik yuz berdi.";
-      const technicalDetails = `Msg: ${errorMessage}\nCode: ${error.code || 'N/A'}\nStatus: ${error.status || 'N/A'}\nURL: ${process.env.NEXT_PUBLIC_SUPABASE_URL}`;
       
-      setErrorDetails(technicalDetails);
+      if (!errorDetails) {
+        setErrorDetails(`Xabar: ${errorMessage}\nKodi: ${error.code || 'N/A'}`);
+      }
+      
       toast({
         variant: "destructive",
         title: "Kirishda xatolik!",

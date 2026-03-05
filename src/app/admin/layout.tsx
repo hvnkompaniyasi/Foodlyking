@@ -49,7 +49,7 @@ export default function AdminLayout({
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#F8F9FA]">
-        <div className="p-10 flat-card bg-white flex flex-col items-center gap-6">
+        <div className="p-10 flat-card bg-white flex flex-col items-center gap-6 animate-pulse">
           <Loader2 className="h-12 w-12 text-primary animate-spin" />
           <p className="font-black uppercase tracking-widest text-xs">Xavfsizlik tekshirilmoqda...</p>
         </div>
@@ -67,7 +67,7 @@ export default function AdminLayout({
         </aside>
 
         <main className="flex-1 min-h-screen bg-[#F8F9FA]">
-          <div className="p-4 md:p-10 max-w-7xl mx-auto">
+          <div className="p-4 md:p-10 max-w-7xl mx-auto animate-in fade-in duration-500">
             {children}
           </div>
         </main>

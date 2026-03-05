@@ -1,19 +1,20 @@
-
 'use client';
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { User, Search, Menu as MenuIcon, UtensilsCrossed, LogOut, Bell } from 'lucide-react';
+import { Search, Menu as MenuIcon, UtensilsCrossed, LogOut, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
 
 export function Navbar() {
   const router = useRouter();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     toast({
       title: "Chiqildi",
       description: "Tizimdan muvaffaqiyatli chiqdingiz.",

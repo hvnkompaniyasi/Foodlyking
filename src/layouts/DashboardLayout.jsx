@@ -40,7 +40,7 @@ const DashboardLayout = () => {
   ]
 
   const SidebarContent = ({ collapsed = false }) => (
-    <div className="flex flex-col h-full bg-white border-r border-gray-100 shadow-[20px_0_50px_rgba(0,0,0,0.02)] transition-all duration-300">
+    <div className="flex flex-col h-full bg-white border-r border-gray-100 shadow-[25px_0_60px_-15px_rgba(0,0,0,0.05)] transition-all duration-300 relative z-[10]">
       <div className={`p-8 mb-4 flex items-center ${collapsed ? 'justify-center' : 'justify-between'}`}>
         {!collapsed && (
           <div className="flex items-center gap-2">
@@ -127,14 +127,14 @@ const DashboardLayout = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileOpen(false)}
-              className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-md z-[2000]"
+              className="lg:hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[2000]"
             />
             <motion.aside
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="lg:hidden fixed left-0 top-0 h-screen w-[280px] z-[2001] shadow-2xl"
+              className="lg:hidden fixed left-0 top-0 h-screen w-[280px] z-[2001] shadow-[50px_0_100px_rgba(0,0,0,0.3)] bg-white"
             >
               <SidebarContent />
               <button
@@ -150,15 +150,15 @@ const DashboardLayout = () => {
 
       {/* Main Content */}
       <div className={`flex-1 flex flex-col transition-all duration-300 ${isCollapsed ? 'lg:ml-20' : 'lg:ml-72'}`}>
-        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100/50 flex items-center justify-between px-6 lg:px-10 sticky top-0 z-30">
-          <div className="flex items-center gap-4">
+        <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-4 sm:px-6 lg:px-10 sticky top-0 z-30">
+          <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={() => setIsMobileOpen(true)}
               className="lg:hidden p-2 text-gray-500 hover:text-black hover:bg-gray-50 rounded-xl transition-all"
             >
-              <MenuIcon size={24} />
+              <MenuIcon size={22} />
             </button>
-            <h1 className="text-xl font-black tracking-tighter-premium">
+            <h1 className="text-lg sm:text-xl font-black tracking-tighter-premium truncate max-w-[150px] sm:max-w-none">
               {menuItems.find(i => i.path === location.pathname)?.label || 'Dashboard'}
             </h1>
           </div>

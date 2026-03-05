@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -17,12 +18,12 @@ import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 
 const navItems = [
-  { name: 'Boshqaruv paneli', href: '/admin', icon: LayoutDashboard },
-  { name: 'Taomlar', href: '/admin/foods', icon: UtensilsCrossed },
-  { name: 'Kategoriyalar', href: '/admin/categories', icon: Layers },
-  { name: 'Buyurtmalar', href: '/admin/orders', icon: ClipboardList },
-  { name: 'Mijozlar', href: '/admin/customers', icon: Users },
-  { name: 'Sozlamalar', href: '/admin/settings', icon: Settings },
+  { name: 'Boshqaruv paneli', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Taomlar', href: '/dashboard/foods', icon: UtensilsCrossed },
+  { name: 'Kategoriyalar', href: '/dashboard/categories', icon: Layers },
+  { name: 'Buyurtmalar', href: '/dashboard/orders', icon: ClipboardList },
+  { name: 'Mijozlar', href: '/dashboard/customers', icon: Users },
+  { name: 'Sozlamalar', href: '/dashboard/settings', icon: Settings },
 ];
 
 interface SidebarProps {
@@ -40,7 +41,7 @@ export function DashboardSidebar({ onClose, className }: SidebarProps) {
       title: "Chiqildi",
       description: "Tizimdan muvaffaqiyatli chiqdingiz.",
     });
-    router.push('/');
+    router.push('/login');
   };
 
   return (
@@ -60,7 +61,7 @@ export function DashboardSidebar({ onClose, className }: SidebarProps) {
       <nav className="flex-1 px-4 space-y-3">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/admin');
+          const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/dashboard');
           return (
             <Link 
               key={item.href} 

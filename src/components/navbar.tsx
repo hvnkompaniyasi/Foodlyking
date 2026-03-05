@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -19,14 +20,14 @@ export function Navbar() {
       title: "Chiqildi",
       description: "Tizimdan muvaffaqiyatli chiqdingiz.",
     });
-    router.push('/');
+    router.push('/login');
   };
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-white border-b-4 border-black">
       <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-8">
         <div className="flex items-center gap-10">
-          <Link href="/admin" className="flex items-center space-x-2">
+          <Link href="/dashboard" className="flex items-center space-x-2">
             <div className="bg-primary p-1.5 border-2 border-black rounded-xl text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <UtensilsCrossed className="h-6 w-6" />
             </div>
@@ -72,10 +73,10 @@ export function Navbar() {
             <SheetContent side="right" className="border-l-4 border-black p-0">
               <div className="p-8 space-y-8 mt-12">
                 <div className="flex flex-col space-y-6">
-                  <Link href="/admin" className="text-3xl font-black hover:text-primary uppercase tracking-tighter">Bosh sahifa</Link>
-                  <Link href="/admin/foods" className="text-3xl font-black hover:text-primary uppercase tracking-tighter">Taomlar</Link>
-                  <Link href="/admin/orders" className="text-3xl font-black hover:text-primary uppercase tracking-tighter">Buyurtmalar</Link>
-                  <Link href="/admin/categories" className="text-3xl font-black hover:text-primary uppercase tracking-tighter">Kategoriyalar</Link>
+                  <Link href="/dashboard" className="text-3xl font-black hover:text-primary uppercase tracking-tighter">Bosh sahifa</Link>
+                  <Link href="/dashboard/foods" className="text-3xl font-black hover:text-primary uppercase tracking-tighter">Taomlar</Link>
+                  <Link href="/dashboard/orders" className="text-3xl font-black hover:text-primary uppercase tracking-tighter">Buyurtmalar</Link>
+                  <Link href="/dashboard/categories" className="text-3xl font-black hover:text-primary uppercase tracking-tighter">Kategoriyalar</Link>
                 </div>
                 <hr className="border-4 border-black" />
                 <button onClick={handleLogout} className="text-2xl font-black text-red-500 uppercase tracking-tighter flex items-center gap-2">

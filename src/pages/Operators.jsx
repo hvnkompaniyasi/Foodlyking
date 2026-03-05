@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import {
     Users,
     UserPlus,
@@ -9,28 +10,20 @@ import {
     ChevronRight,
     BarChart3,
     X,
-    Loader2
+    Loader2,
+    ShoppingBag,
+    DollarSign
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import Button from '../components/ui/Button'
 
 const Operators = () => {
+    const navigate = useNavigate()
     const [operators, setOperators] = useState([])
     const [loading, setLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState('')
     const [selectedOperator, setSelectedOperator] = useState(null)
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false)
     const [isStatsOpen, setIsStatsOpen] = useState(false)
-
-    // Form state
-    const [formData, setFormData] = useState({
-        full_name: '',
-        phone_number: '+998-',
-        email: '',
-        password: ''
-    })
-    const [formLoading, setFormLoading] = useState(false)
-    const [formError, setFormError] = useState('')
 
     useEffect(() => {
         fetchOperators()
@@ -54,76 +47,6 @@ const Operators = () => {
         }
     }
 
-    const formatPhoneNumber = (value) => {
-        // Remove all non-digits except the leading +
-        const numbers = value.replace(/[^\d]/g, '');
-        // Ensure it starts with 998
-        let part = numbers.startsWith('998') ? numbers : '998' + numbers;
-
-        let formatted = '+998';
-        if (part.length > 3) {
-            formatted += '-' + part.substring(3, 5);
-        }
-        if (part.length > 5) {
-            formatted += '-' + part.substring(5, 8);
-        }
-        if (part.length > 8) {
-            formatted += '-' + part.substring(8, 10);
-        }
-        if (part.length > 10) {
-            formatted += '-' + part.substring(10, 12);
-        }
-        return formatted.substring(0, 18);
-    }
-
-    const handlePhoneChange = (e) => {
-        const val = e.target.value;
-        if (val.length < 5) {
-            setFormData({ ...formData, phone_number: '+998-' });
-            return;
-        }
-        setFormData({ ...formData, phone_number: formatPhoneNumber(val) });
-    }
-
-    const handleAddOperator = async (e) => {
-        e.preventDefault()
-        setFormLoading(true)
-        setFormError('')
-
-        try {
-            // 1. Create auth user
-            const { data: authData, error: authError } = await supabase.auth.signUp({
-                email: formData.email,
-                password: formData.password,
-            })
-
-            if (authError) throw authError
-
-            if (authData.user) {
-                // 2. Update profile
-                const { error: profileError } = await supabase
-                    .from('profiles')
-                    .update({
-                        full_name: formData.full_name,
-                        phone_number: formData.phone_number,
-                        role: 'operator',
-                        email: formData.email
-                    })
-                    .eq('id', authData.user.id)
-
-                if (profileError) throw profileError
-            }
-
-            setIsAddModalOpen(false)
-            setFormData({ full_name: '', phone_number: '+998-', email: '', password: '' })
-            fetchOperators()
-        } catch (err) {
-            setFormError(err.message)
-        } finally {
-            setFormLoading(false)
-        }
-    }
-
     const filteredOperators = operators.filter(op =>
         op.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         op.phone_number?.includes(searchQuery) ||
@@ -138,7 +61,7 @@ const Operators = () => {
                     <p className="text-sm text-gray-500 font-medium tracking-tight">Tizim operatorlarini boshqarish va statistikasini kuzatish</p>
                 </div>
                 <Button
-                    onClick={() => setIsAddModalOpen(true)}
+                    onClick={() => navigate('/operators/add')}
                     className="!w-auto !py-3 !px-8 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all"
                 >
                     <UserPlus size={18} />
@@ -303,102 +226,6 @@ const Operators = () => {
                     </AnimatePresence>
                 </div>
             </div>
-
-            {/* Add Operator Modal */}
-            <AnimatePresence>
-                {isAddModalOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={() => setIsAddModalOpen(false)}
-                            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-                        />
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9, y: 30 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9, y: 30 }}
-                            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                            className="relative w-full max-w-md bg-white rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.2)] overflow-hidden"
-                        >
-                            <div className="p-8 pb-4 border-b border-gray-50 flex items-center justify-between">
-                                <h3 className="text-2xl font-black tracking-tighter">Yangi operator</h3>
-                                <button
-                                    onClick={() => setIsAddModalOpen(false)}
-                                    className="w-10 h-10 flex items-center justify-center rounded-full text-gray-300 hover:text-black hover:bg-gray-50 transition-all"
-                                >
-                                    <X size={24} />
-                                </button>
-                            </div>
-
-                            <form onSubmit={handleAddOperator} className="p-8 space-y-5">
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">To'liq ismi</label>
-                                    <input
-                                        type="text"
-                                        placeholder="Ali Valiyev"
-                                        className="premium-input !py-4"
-                                        value={formData.full_name}
-                                        onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                                        required
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Telefon raqami</label>
-                                    <input
-                                        type="tel"
-                                        placeholder="+998-XX-XXX-XX-XX"
-                                        className="premium-input !py-4 font-mono text-sm"
-                                        value={formData.phone_number}
-                                        onChange={handlePhoneChange}
-                                        required
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Email manzili</label>
-                                    <input
-                                        type="email"
-                                        placeholder="operator@foodlyking.com"
-                                        className="premium-input !py-4"
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        required
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Parol</label>
-                                    <input
-                                        type="password"
-                                        placeholder="••••••••"
-                                        className="premium-input !py-4"
-                                        value={formData.password}
-                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                        required
-                                    />
-                                </div>
-
-                                {formError && (
-                                    <div className="p-4 bg-red-50 text-red-600 rounded-2xl text-[10px] font-bold border border-red-100 flex items-center gap-2">
-                                        <X size={12} />
-                                        {formError}
-                                    </div>
-                                )}
-
-                                <div className="pt-4">
-                                    <Button
-                                        type="submit"
-                                        loading={formLoading}
-                                        className="!py-4.5 uppercase tracking-widest font-black text-xs shadow-lg hover:shadow-black/20"
-                                    >
-                                        Saqlash
-                                    </Button>
-                                </div>
-                            </form>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
         </div>
     )
 }

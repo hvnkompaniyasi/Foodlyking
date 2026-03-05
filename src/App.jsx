@@ -6,6 +6,7 @@ import DashboardLayout from './layouts/DashboardLayout'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Operators from './pages/Operators'
+import AddOperator from './pages/AddOperator'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route element={<DashboardLayout />}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/operators" element={<Operators />} />
+              <Route path="/operators/add" element={<AddOperator />} />
               {/* Other routes can be added here */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>

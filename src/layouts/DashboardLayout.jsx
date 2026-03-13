@@ -17,29 +17,13 @@ const DashboardLayout = () => {
   const { signOut, user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-  const [isMobileOpen, setIsMobileOpen] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false) 
   const [searchTerm, setSearchTerm] = useState('')
 
-  // Close mobile menu on route change
+  // Close sidebar on route change
   useEffect(() => {
-    setIsMobileOpen(false)
+    setIsSidebarOpen(false)
   }, [location.pathname])
-  
-  // Basic responsive check
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 1024) {
-        setIsSidebarOpen(false)
-      } else {
-        setIsSidebarOpen(true)
-      }
-    }
-    window.addEventListener('resize', handleResize)
-    handleResize() // initial check
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
-
 
   const handleLogout = async () => {
     await signOut()
@@ -57,9 +41,9 @@ const DashboardLayout = () => {
   const filteredMenuItems = menuItems.filter(item => 
     item.label.toLowerCase().includes(searchTerm.toLowerCase())
   )
-
-  const SidebarContent = ({ isMobile = false }) => (
-    <div className="flex flex-col h-full bg-white border-r border-gray-100 shadow-[25px_0_60px_-15px_rgba(0,0,0,0.05)] transition-all duration-300 relative z-[1001]">
+    
+  const SidebarContent = ({ onClose }) => (
+    <div className="flex flex-col h-full bg-white border-r border-gray-100 shadow-2xl">
       {/* Logo & Close Button Area */}
       <div className={`p-6 mb-2 flex items-center justify-between`}>
           <div className="flex items-center gap-2">
@@ -69,14 +53,13 @@ const DashboardLayout = () => {
             </div>
           </div>
         
-        {isMobile && (
+        {/* Universal close button */}
           <button
-            onClick={() => setIsMobileOpen(false)}
+            onClick={onClose}
             className="p-2 text-gray-400 hover:text-black hover:bg-gray-50 rounded-full transition-all"
           >
             <X size={24} />
           </button>
-        )}
       </div>
 
       {/* Search Bar */}
@@ -105,7 +88,7 @@ const DashboardLayout = () => {
               className={`flex items-center gap-5 px-5 py-4 rounded-[1.5rem] transition-all duration-300 group relative ${isActive
                 ? 'bg-black text-white shadow-[0_20px_40px_rgba(0,0,0,0.2)] scale-[1.02]'
                 : 'text-gray-400 hover:bg-gray-50 hover:text-black hover:translate-x-1'
-                }`}
+                }` }
             >
               <item.icon size={22} className={isActive ? 'text-white' : 'text-gray-400 group-hover:text-black transition-colors'} />
               <motion.span
@@ -135,61 +118,41 @@ const DashboardLayout = () => {
     </div>
   )
 
-  const mainContentMargin = isSidebarOpen ? 'lg:ml-[320px]' : 'lg:ml-0';
-
   return (
     <div className="flex min-h-screen bg-[#f9fafb]">
-      {/* Desktop & Mobile Sidebar Container */}
-      <div className='lg:block hidden'>
-        <motion.aside
-          initial={false}
-          animate={{ width: isSidebarOpen ? 320 : 0, padding: isSidebarOpen ? '0' : '0' }}
-          transition={{ type: 'spring', damping: 30, stiffness: 250 }}
-          className="fixed left-0 top-0 h-screen z-[1001] bg-white overflow-hidden"
-        >
-          <div className='w-[320px] h-full'>
-            <SidebarContent />
-          </div>
-        </motion.aside>
-      </div>
-
-
-      {/* Mobile Sidebar (Slide-in) */}
+      {/* Unified Slide-in Sidebar */}
       <AnimatePresence>
-        {isMobileOpen && (
+        {isSidebarOpen && (
           <>
+            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsMobileOpen(false)}
-              className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[2000]"
+              onClick={() => setIsSidebarOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[2000]"
             />
+            {/* Sidebar */}
             <motion.aside
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="lg:hidden fixed left-0 top-0 h-screen w-[300px] z-[2001] bg-white"
+              className="fixed left-0 top-0 h-screen w-[320px] z-[2001] bg-white"
             >
-              <SidebarContent isMobile={true} />
+              <SidebarContent onClose={() => setIsSidebarOpen(false)} />
             </motion.aside>
           </>
         )}
       </AnimatePresence>
 
-      {/* Main Content */}
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${mainContentMargin}`}>
+      {/* Main Content (no more margin changes) */}
+      <div className={`flex-1 flex flex-col transition-all duration-300`}>
         <header className="h-20 bg-white/80 backdrop-blur-lg border-b border-gray-100 flex items-center justify-between px-4 sm:px-6 lg:px-10 sticky top-0 z-30">
           <div className="flex items-center gap-2 sm:gap-4">
+             {/* Universal Open Button */}
              <button
-              onClick={() => {
-                if (window.innerWidth < 1024) {
-                  setIsMobileOpen(true)
-                } else {
-                  setIsSidebarOpen(!isSidebarOpen)
-                }
-              }}
+              onClick={() => setIsSidebarOpen(true)}
               className="p-2 text-gray-500 hover:text-black hover:bg-gray-50 rounded-xl transition-all"
             >
               <MenuIcon size={22} />

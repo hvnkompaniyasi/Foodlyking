@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronDown, Package, Burger, GlassWater } from 'lucide-react'
+import { ChevronDown, Package, Beef, GlassWater } from 'lucide-react'
 
 // Mock Data for Orders
 const mockOrders = [
@@ -8,7 +8,7 @@ const mockOrders = [
     id: '#FDLK-7892',
     customerName: "O'tkirbek Karimov",
     items: [
-      { name: 'Chicken King Burger', quantity: 2, icon: Burger },
+      { name: 'Chicken King Burger', quantity: 2, icon: Beef },
       { name: 'Cola 1.5L', quantity: 1, icon: GlassWater },
     ],
     totalAmount: 58000,
@@ -18,7 +18,7 @@ const mockOrders = [
   {
     id: '#FDLK-7891',
     customerName: 'Ali Valiyev',
-    items: [{ name: 'Double Cheeseburger', quantity: 1, icon: Burger }],
+    items: [{ name: 'Double Cheeseburger', quantity: 1, icon: Beef }],
     totalAmount: 32000,
     status: 'Tayyorlanmoqda',
     timestamp: '2024-07-28T10:25:00Z',
@@ -27,7 +27,7 @@ const mockOrders = [
     id: '#FDLK-7890',
     customerName: 'Sardor Ahmedov',
     items: [
-        { name: 'Special Combo', quantity: 1, icon: Burger },
+        { name: 'Special Combo', quantity: 1, icon: Beef },
         { name: 'Fanta 1L', quantity: 2, icon: GlassWater },
     ],
     totalAmount: 75000,
@@ -37,7 +37,7 @@ const mockOrders = [
   {
     id: '#FDLK-7889',
     customerName: 'Javohir Toshmatov',
-    items: [{ name: 'Beef Burger', quantity: 4, icon: Burger }],
+    items: [{ name: 'Beef Burger', quantity: 4, icon: Beef }],
     totalAmount: 112000,
     status: 'Yetkazildi',
     timestamp: '2024-07-27T18:45:00Z',
@@ -45,7 +45,7 @@ const mockOrders = [
     {
     id: '#FDLK-7888',
     customerName: 'Rustam Karimov',
-    items: [{ name: 'Student Combo', quantity: 1, icon: Burger }],
+    items: [{ name: 'Student Combo', quantity: 1, icon: Beef }],
     totalAmount: 25000,
     status: 'Bekor qilindi',
     timestamp: '2024-07-27T15:20:00Z',

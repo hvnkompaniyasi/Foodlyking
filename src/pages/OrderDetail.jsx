@@ -51,7 +51,7 @@ const OrderDetail = () => {
     const currentAction = workflowConfig[order.status];
 
     return (
-        <div className="bg-black text-white min-h-full p-6 md:p-8 space-y-8 font-sans">
+        <div className="bg-black text-white min-h-screen p-6 md:p-8 space-y-8 font-sans">
             {/* Header & Actions */}
             <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                 <div className="flex items-center gap-4">
@@ -137,7 +137,10 @@ const OrderDetail = () => {
             <AnimatePresence>
                 {isCancelModalOpen && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" aria-modal="true">
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setCancelModalOpen(false)} />
+                        {/* Overlay */}
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setCancelModalOpen(false)} />
+                        
+                        {/* Modal Content */}
                         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="relative w-full max-w-md bg-gray-900 border border-gray-700 rounded-2xl p-8 shadow-2xl">
                             <h2 className="font-bold text-xl text-white mb-2">Buyurtmani bekor qilish</h2>
                             <p className="text-gray-400 mb-6">Iltimos, bekor qilish sababini aniq yozing. Bu mijozga bildirishnoma sifatida yuboriladi.</p>

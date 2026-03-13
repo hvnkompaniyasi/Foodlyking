@@ -7,7 +7,7 @@ import { Search, Clock, Bike, Check, XCircle, ShoppingCart } from 'lucide-react'
 const mockOrders = [
     { id: '7892', customer: { name: 'Azizbek Akbarov' }, date: '2024-07-30 14:25', amount: 95000, status: 'Yangi' },
     { id: '7891', customer: { name: 'Laylo Rustamova' }, date: '2024-07-30 13:10', amount: 29000, status: 'Tayyorlanmoqda' },
-    { id: '7890', customer: { name: 'Sardor Komilov' }, date: '2024-07-29 18:45', amount: 75000, status: 'Yo'lda' },
+    { id: '7890', customer: { name: 'Sardor Komilov' }, date: '2024-07-29 18:45', amount: 75000, status: 'Yo\'lda' },
     { id: '7889', customer: { name: 'Madina Aliyeva' }, date: '2024-07-29 12:05', amount: 37000, status: 'Yetkazildi' },
     { id: '7888', customer: { name: 'Otabek Abdullaev' }, date: '2024-07-28 20:15', amount: 54000, status: 'Bekor qilindi' },
 ];
@@ -15,12 +15,12 @@ const mockOrders = [
 const statusConfig = {
     'Yangi': { color: '#FFC20E', Icon: ShoppingCart },
     'Tayyorlanmoqda': { color: '#4285F4', Icon: Clock },
-    'Yo'lda': { color: '#F26522', Icon: Bike },
+    'Yo\'lda': { color: '#F26522', Icon: Bike },
     'Yetkazildi': { color: '#00A99D', Icon: Check },
     'Bekor qilindi': { color: '#EF4444', Icon: XCircle },
 };
 
-const statusFilters = ['Barchasi', 'Yangi', 'Tayyorlanmoqda', 'Yo'lda', 'Yetkazildi', 'Bekor qilindi'];
+const statusFilters = ['Barchasi', 'Yangi', 'Tayyorlanmoqda', 'Yo\'lda', 'Yetkazildi', 'Bekor qilindi'];
 
 const Orders = () => {
     const navigate = useNavigate();

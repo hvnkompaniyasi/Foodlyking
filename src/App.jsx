@@ -13,12 +13,16 @@ import Customers from './pages/Customers';
 import Operators from './pages/Operators';
 import AddOperator from './pages/AddOperator';
 import Statistics from './pages/Statistics';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 const App = () => {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Router>
+          <Routes>
           <Route path="/login" element={<Login />} />
           
           {/* Protected Routes with Dashboard Layout */}
@@ -44,6 +48,7 @@ const App = () => {
         </Routes>
       </Router>
     </AuthProvider>
+    </QueryClientProvider>
   );
 };
 

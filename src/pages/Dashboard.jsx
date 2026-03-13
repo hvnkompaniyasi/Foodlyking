@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Package, Users, DollarSign, Clock } from 'lucide-react';
@@ -14,12 +14,16 @@ const fetchDashboardData = async () => {
 
     if (ordersError) throw new Error(ordersError.message);
 
-    // Placeholder data for stats - replace with actual queries
     const { count: totalOrders, error: totalOrdersError } = await supabase.from('orders').select('*', { count: 'exact', head: true });
     const { count: totalCustomers, error: totalCustomersError } = await supabase.from('customers').select('*', { count: 'exact', head: true });
     
-    // You would calculate revenue with a proper query or function
-    const totalRevenue = 12500000; // Example static value
+    // Dynamic revenue calculation from completed orders
+    const { data: revenueData, error: revenueError } = await supabase
+        .from('orders')
+        .select('total_price')
+        .eq('status', 'completed');
+    
+    const totalRevenue = revenueData?.reduce((sum, order) => sum + order.total_price, 0) || 0;
 
     return { 
         recentOrders,
@@ -70,7 +74,10 @@ const RecentOrderItem = ({ order }) => {
 
 
 const Dashboard = () => {
-    const { data, error, isLoading } = useQuery('dashboardData', fetchDashboardData);
+    const { data, error, isLoading } = useQuery({ 
+        queryKey: ['dashboardData'], 
+        queryFn: fetchDashboardData 
+    });
 
     if (isLoading) {
         return <div className="text-center text-gray-400 p-10">Ma'lumotlar yuklanmoqda...</div>;

@@ -1,30 +1,44 @@
 import React, { useState, useMemo } from 'react';
-import { Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import { useQuery } from '@tanstack/react-query';
 
 const CustomerRow = ({ customer }) => (
     <tr className="hover:bg-gray-800/60 transition-colors">
-        <td className="p-4 font-bold">#{customer.id}</td>
+        <td className="p-4 font-bold">#{customer.id.toString().slice(0, 8)}</td>
         <td className="p-4">{customer.name}</td>
         <td className="p-4 text-gray-400">{customer.phone}</td>
-        <td className="p-4">{customer.firstOrder}</td>
-        <td className="p-4 font-bold text-right">{customer.totalOrders} ta</td>
+        <td className="p-4">{customer.created_at ? new Date(customer.created_at).toLocaleDateString() : 'N/A'}</td>
+        <td className="p-4 font-bold text-right">{customer.total_orders || 0} ta</td>
     </tr>
 );
 
 const Customers = () => {
-    // Bu ma'lumotlar backenddan kelishi kerak
-    const [customers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [sort, setSort] = useState({ column: 'totalOrders', direction: 'desc' });
+    const [sort, setSort] = useState({ column: 'name', direction: 'asc' });
+
+    const { data: customers = [], isLoading } = useQuery({
+        queryKey: ['customers'],
+        queryFn: async () => {
+            const { data, error } = await supabase
+                .from('customers')
+                .select('*')
+                .order('name', { ascending: true });
+            if (error) throw error;
+            return data;
+        }
+    });
 
     const sortedCustomers = useMemo(() => {
         if (!customers.length) return [];
 
         const sorted = [...customers].sort((a, b) => {
-            if (a[sort.column] < b[sort.column]) {
+            const valA = a[sort.column] || '';
+            const valB = b[sort.column] || '';
+            if (valA < valB) {
                 return sort.direction === 'asc' ? -1 : 1;
             }
-            if (a[sort.column] > b[sort.column]) {
+            if (valA > valB) {
                 return sort.direction === 'asc' ? 1 : -1;
             }
             return 0;
@@ -37,8 +51,8 @@ const Customers = () => {
         if (!lowercasedSearchTerm) return sortedCustomers;
 
         return sortedCustomers.filter(customer =>
-            customer.name.toLowerCase().includes(lowercasedSearchTerm) ||
-            customer.phone.includes(lowercasedSearchTerm)
+            (customer.name && customer.name.toLowerCase().includes(lowercasedSearchTerm)) ||
+            (customer.phone && customer.phone.includes(lowercasedSearchTerm))
         );
     }, [searchTerm, sortedCustomers]);
 
@@ -90,7 +104,14 @@ const Customers = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredCustomers.length > 0 ? (
+                                {isLoading ? (
+                                    <tr>
+                                        <td colSpan="5" className="px-8 py-20 text-center text-gray-400">
+                                            <Loader2 className="animate-spin mx-auto mb-4" />
+                                            <p className="text-sm font-bold uppercase tracking-widest">Yuklanmoqda...</p>
+                                        </td>
+                                    </tr>
+                                ) : filteredCustomers.length > 0 ? (
                                     filteredCustomers.map(customer => <CustomerRow key={customer.id} customer={customer} />)
                                 ) : (
                                     <tr>

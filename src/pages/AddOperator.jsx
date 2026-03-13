@@ -3,7 +3,15 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowLeft, UserPlus, X, Phone, Mail, Lock, User } from 'lucide-react'
 import { supabase } from '../lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 import Button from '../components/ui/Button'
+
+// Temporary client to avoid signing out the current admin
+const tempSupabase = createClient(
+    import.meta.env.VITE_SUPABASE_URL,
+    import.meta.env.VITE_SUPABASE_ANON_KEY,
+    { auth: { persistSession: false } }
+)
 
 const AddOperator = () => {
     const navigate = useNavigate()
@@ -51,7 +59,7 @@ const AddOperator = () => {
         setError('')
 
         try {
-            const { data: authData, error: authError } = await supabase.auth.signUp({
+            const { data: authData, error: authError } = await tempSupabase.auth.signUp({
                 email: formData.email,
                 password: formData.password,
             })
@@ -59,15 +67,15 @@ const AddOperator = () => {
             if (authError) throw authError
 
             if (authData.user) {
-                const { error: profileError } = await supabase
+                const { error: profileError } = await tempSupabase
                     .from('profiles')
-                    .update({
+                    .upsert({
+                        id: authData.user.id,
                         full_name: formData.full_name,
                         phone_number: formData.phone_number,
                         role: 'operator',
                         email: formData.email
                     })
-                    .eq('id', authData.user.id)
 
                 if (profileError) throw profileError
             }

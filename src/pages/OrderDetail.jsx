@@ -1,7 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, CheckCircle, Printer, X, ShoppingCart, Clock, Bike, Check as CheckIcon, ThumbsUp, CheckCheck } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 const statusConfig = {
     'Yangi': { color: '#FFC20E', icon: ShoppingCart, label: 'Yangi' },
@@ -19,25 +21,43 @@ const workflowConfig = {
     'Yo\'lda': { text: 'YETKAZILDI', nextStatus: 'Yetkazildi', color: '#00A99D', icon: CheckCheck },
 };
 
-const initialOrders = {
-    '7892': { id: '7892', customer: { name: 'Azizbek Akbarov', phone: '+998 90 123 45 67' }, date: '2024-07-30 14:25', amount: 102000, status: 'Yangi', items: [{ name: 'BBQ Burger', quantity: 2, price: 45000, image: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?q=80&w=200' }, { name: 'Cola 1.5L', quantity: 1, price: 12000, image: null }] },
-};
-
 const OrderDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     
-    const [orders, setOrders] = useState(initialOrders);
-    const [order, setOrder] = useState(orders[id] || initialOrders['7892']); // Fallback
-
     const [isCancelModalOpen, setCancelModalOpen] = useState(false);
     const [cancelReason, setCancelReason] = useState('');
 
+    const { data: order, isLoading, error } = useQuery({
+        queryKey: ['order', id],
+        queryFn: async () => {
+            const { data, error } = await supabase
+                .from('orders')
+                .select('*, order_items(*)')
+                .eq('id', id)
+                .single();
+            if (error) throw error;
+            return data;
+        }
+    });
+
+    const updateStatusMutation = useMutation({
+        mutationFn: async (newStatus) => {
+            const { error } = await supabase
+                .from('orders')
+                .update({ status: newStatus })
+                .eq('id', id);
+            if (error) throw error;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries(['order', id]);
+            queryClient.invalidateQueries(['orders']);
+        }
+    });
+
     const handleStatusUpdate = (newStatus) => {
-        const updatedOrder = { ...order, status: newStatus };
-        setOrder(updatedOrder);
-        const updatedOrders = { ...orders, [id]: updatedOrder };
-        setOrders(updatedOrders);
+        updateStatusMutation.mutate(newStatus);
     };
 
     const handleCancelSubmit = () => {
@@ -46,8 +66,12 @@ const OrderDetail = () => {
             setCancelModalOpen(false);
         }
     };
+
+    if (isLoading) return <div className="min-h-screen bg-black text-white flex items-center justify-center">Yuklanmoqda...</div>;
+    if (error) return <div className="min-h-screen bg-black text-white flex items-center justify-center text-red-500">Xatolik: {error.message}</div>;
+    if (!order) return <div className="min-h-screen bg-black text-white flex items-center justify-center text-gray-500">Buyurtma topilmadi.</div>;
     
-    const currentStatus = useMemo(() => statusConfig[order.status], [order.status]);
+    const currentStatus = statusConfig[order.status] || { color: '#6B7280', icon: Clock, label: order.status };
     const currentAction = workflowConfig[order.status];
 
     return (
@@ -59,7 +83,7 @@ const OrderDetail = () => {
                         <ArrowLeft size={22} />
                     </button>
                     <div className='flex items-center gap-4'>
-                        <h1 className="text-3xl md:text-4xl font-black tracking-tighter-premium text-white">Buyurtma #{order.id}</h1>
+                        <h1 className="text-3xl md:text-4xl font-black tracking-tighter-premium text-white">Buyurtma #{order.id.toString().slice(0, 8)}</h1>
                         {currentStatus && (
                             <div style={{ '--status-color': currentStatus.color, boxShadow: `0 0 20px -3px ${currentStatus.color}60` }} className={`flex items-center gap-2 text-xs font-bold py-2 px-4 rounded-full bg-[var(--status-color)]/10 text-[var(--status-color)]`}>
                                 <currentStatus.icon size={16} />
@@ -95,8 +119,8 @@ const OrderDetail = () => {
                 <div className="lg:col-span-2 bg-gray-900 border border-gray-800 rounded-2xl p-6">
                     <h3 className="font-bold text-lg text-white mb-4">Taomlar ro'yxati</h3>
                     <div className="space-y-4">
-                        {order.items.map(item => (
-                            <div key={item.name} className="flex items-start md:items-center justify-between p-4 bg-gray-800/50 rounded-xl flex-col md:flex-row gap-4 md:gap-0">
+                        {(order.order_items || []).map(item => (
+                            <div key={item.id || item.name} className="flex items-start md:items-center justify-between p-4 bg-gray-800/50 rounded-xl flex-col md:flex-row gap-4 md:gap-0">
                                 <div className="flex items-center gap-4">
                                     {item.image ? 
                                         <img src={item.image} alt={item.name} className="w-16 h-16 rounded-lg object-cover" /> :
@@ -106,11 +130,11 @@ const OrderDetail = () => {
                                     }
                                     <div>
                                         <p className="font-bold text-white">{item.name}</p>
-                                        <p className="text-sm text-gray-400">{item.quantity} x {item.price.toLocaleString()} so'm</p>
+                                        <p className="text-sm text-gray-400">{item.quantity} x {(item.price || 0).toLocaleString()} so'm</p>
                                     </div>
                                 </div>
                                 <div className='bg-white rounded-lg px-4 py-2'>
-                                    <p className="font-black text-lg text-black">{(item.quantity * item.price).toLocaleString()} so'm</p>
+                                    <p className="font-black text-lg text-black">{(item.quantity * (item.price || 0)).toLocaleString()} so'm</p>
                                 </div>
                             </div>
                         ))}
@@ -121,13 +145,13 @@ const OrderDetail = () => {
                     <div className="bg-black border border-gray-800 rounded-2xl p-8 h-full flex flex-col justify-between">
                         <div>
                             <h3 className="font-bold text-lg text-white mb-4">Mijoz ma'lumotlari</h3>
-                            <p className="font-bold text-2xl text-white">{order.customer.name}</p>
-                            <p className="text-gray-400 text-lg">{order.customer.phone}</p>
+                            <p className="font-bold text-2xl text-white">{order.customer_name || "Noma'lum"}</p>
+                            <p className="text-gray-400 text-lg">{order.customer_phone || "Tel ko'rsatilmadi"}</p>
                         </div>
                         <div className="bg-white border border-gray-200 rounded-2xl p-6 mt-8">
                             <div className="flex justify-between items-center text-gray-500 font-medium">
                                 <p>Jami summa:</p>
-                                <p className="text-black font-black text-3xl">{order.amount.toLocaleString()} so'm</p>
+                                <p className="text-black font-black text-3xl">{(order.total_price || 0).toLocaleString()} so'm</p>
                             </div>
                         </div>
                     </div>

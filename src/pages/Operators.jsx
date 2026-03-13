@@ -187,14 +187,14 @@ const Operators = () => {
                                     <div className="p-6 bg-white/5 rounded-3xl border border-white/10 group hover:bg-white/10 transition-colors">
                                         <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Umumiy Buyurtmalar</p>
                                         <div className="flex items-end justify-between">
-                                            <p className="text-3xl font-black">156</p>
+                                            <p className="text-3xl font-black">0</p>
                                             <div className="p-2 bg-white/5 rounded-xl text-gray-400"><ShoppingBag size={16} /></div>
                                         </div>
                                     </div>
                                     <div className="p-6 bg-white/5 rounded-3xl border border-white/10 group hover:bg-white/10 transition-colors">
                                         <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Umumiy Summa</p>
                                         <div className="flex items-end justify-between">
-                                            <p className="text-3xl font-black">$12,450</p>
+                                            <p className="text-3xl font-black">0 so'm</p>
                                             <div className="p-2 bg-white/5 rounded-xl text-gray-400"><DollarSign size={16} /></div>
                                         </div>
                                     </div>
@@ -203,15 +203,15 @@ const Operators = () => {
                                 <div className="space-y-5 pt-8 border-t border-white/10">
                                     <div className="flex items-center justify-between">
                                         <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Bugungi buyurtmalar</p>
-                                        <p className="text-sm font-black text-green-400">12 ta</p>
+                                        <p className="text-sm font-black text-green-400">0 ta</p>
                                     </div>
                                     <div className="flex items-center justify-between">
                                         <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Bugungi summa</p>
-                                        <p className="text-sm font-black text-green-400">$840.00</p>
+                                        <p className="text-sm font-black text-green-400">0 so'm</p>
                                     </div>
                                     <div className="flex items-center justify-between">
                                         <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">O'rtacha qiymat</p>
-                                        <p className="text-sm font-black">$79.80</p>
+                                        <p className="text-sm font-black">0 so'm</p>
                                     </div>
                                 </div>
                             </motion.div>

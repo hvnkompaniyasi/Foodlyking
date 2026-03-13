@@ -6,7 +6,7 @@ import { ChevronDown, Package, Burger, GlassWater } from 'lucide-react'
 const mockOrders = [
   {
     id: '#FDLK-7892',
-    customerName: 'O'tkirbek Karimov',
+    customerName: "O'tkirbek Karimov",
     items: [
       { name: 'Chicken King Burger', quantity: 2, icon: Burger },
       { name: 'Cola 1.5L', quantity: 1, icon: GlassWater },

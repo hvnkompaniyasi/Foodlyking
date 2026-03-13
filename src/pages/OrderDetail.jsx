@@ -44,8 +44,8 @@ const OrderDetail = () => {
 
     return (
         <div className="bg-black text-white min-h-full p-6 md:p-8 space-y-8 font-sans">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            {/* Header & Actions */}
+            <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                 <div className="flex items-center gap-4">
                     <button onClick={() => navigate('/orders')} className="p-2 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors" aria-label="Ortga qaytish">
                         <ArrowLeft size={22} />
@@ -58,14 +58,9 @@ const OrderDetail = () => {
                         </div>
                     </div>
                 </div>
-            </div>
-
-            {/* Actions Panel */}
-            <div className="bg-gray-900 border border-gray-800 rounded-2xl p-4 flex items-center justify-between">
-                <p className='text-gray-400 font-medium text-sm'>Boshqaruv paneli</p>
-                <div className="flex items-center gap-3">
+                 <div className="flex items-center gap-3 w-full md:w-auto">
                     {order.status === 'Yangi' && (
-                        <button onClick={() => handleStatusUpdate('Tayyorlanmoqda')} className="flex items-center justify-center gap-2 py-3 px-5 bg-[#00A99D] text-white rounded-xl font-bold hover:bg-[#00A99D]/80 transition-all shadow-lg shadow-green-500/20" aria-label="Buyurtmani qabul qilish">
+                        <button onClick={() => handleStatusUpdate('Tayyorlanmoqda')} className="flex-1 md:flex-none flex items-center justify-center gap-2 py-3 px-5 bg-[#00A99D] text-white rounded-xl font-bold hover:bg-[#00A99D]/90 transition-all shadow-lg shadow-green-500/20" aria-label="Buyurtmani qabul qilish">
                             <CheckCircle size={18} /> Qabul qilish
                         </button>
                     )}
@@ -108,15 +103,17 @@ const OrderDetail = () => {
                 </div>
 
                 <div className="space-y-8">
-                    <div className="bg-black border border-gray-800 rounded-2xl p-8">
-                        <h3 className="font-bold text-lg text-white mb-4">Mijoz ma'lumotlari</h3>
-                        <p className="font-bold text-2xl text-white">{order.customer.name}</p>
-                        <p className="text-gray-400 text-lg">{order.customer.phone}</p>
-                    </div>
-                    <div className="bg-white border border-gray-200 rounded-2xl p-6">
-                        <div className="flex justify-between items-center text-gray-500 font-medium">
-                            <p>Jami summa:</p>
-                            <p className="text-black font-black text-3xl">{order.amount.toLocaleString()} so'm</p>
+                    <div className="bg-black border border-gray-800 rounded-2xl p-8 h-full flex flex-col justify-between">
+                        <div>
+                            <h3 className="font-bold text-lg text-white mb-4">Mijoz ma'lumotlari</h3>
+                            <p className="font-bold text-2xl text-white">{order.customer.name}</p>
+                            <p className="text-gray-400 text-lg">{order.customer.phone}</p>
+                        </div>
+                        <div className="bg-white border border-gray-200 rounded-2xl p-6 mt-8">
+                            <div className="flex justify-between items-center text-gray-500 font-medium">
+                                <p>Jami summa:</p>
+                                <p className="text-black font-black text-3xl">{order.amount.toLocaleString()} so'm</p>
+                            </div>
                         </div>
                     </div>
                 </div>

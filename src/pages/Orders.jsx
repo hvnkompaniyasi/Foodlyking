@@ -31,7 +31,7 @@ const mockOrders = [
         { name: 'Fanta 1L', quantity: 2, icon: GlassWater },
     ],
     totalAmount: 75000,
-    status: 'Yo'lda',
+    status: "Yo'lda",
     timestamp: '2024-07-28T10:15:00Z',
   },
   {
@@ -55,12 +55,12 @@ const mockOrders = [
 const statusColors = {
   'Yangi': 'bg-[#FFC20E]/10 text-[#FFC20E]',
   'Tayyorlanmoqda': 'bg-blue-500/10 text-blue-500',
-  'Yo'lda': 'bg-purple-500/10 text-purple-500',
+  "Yo'lda": 'bg-purple-500/10 text-purple-500',
   'Yetkazildi': 'bg-[#00A99D]/10 text-[#00A99D]',
   'Bekor qilindi': 'bg-[#F26522]/10 text-[#F26522]',
 };
 
-const filterTabs = ['Barchasi', 'Yangi', 'Tayyorlanmoqda', 'Yo'lda', 'Yetkazildi'];
+const filterTabs = ['Barchasi', 'Yangi', 'Tayyorlanmoqda', "Yo'lda", 'Yetkazildi'];
 
 const Orders = () => {
   const [activeFilter, setActiveFilter] = useState('Barchasi');

@@ -151,7 +151,7 @@ const OrderDetail = () => {
                         <div className="bg-white border border-gray-200 rounded-2xl p-6 mt-8">
                             <div className="flex justify-between items-center text-gray-500 font-medium">
                                 <p>Jami summa:</p>
-                                <p className="text-black font-black text-3xl">{(order.total_price || 0).toLocaleString()} so'm</p>
+                                <p className="text-black font-black text-3xl">{(order.amount || 0).toLocaleString()} so'm</p>
                             </div>
                         </div>
                     </div>

@@ -8,7 +8,7 @@ import { ArrowRight, Package, Users, DollarSign, Clock } from 'lucide-react';
 const fetchDashboardData = async () => {
     const { data: recentOrders, error: ordersError } = await supabase
         .from('orders')
-        .select('id, created_at, total_price, status, customer_name')
+        .select('id, created_at, amount, status, customer_name')
         .order('created_at', { ascending: false })
         .limit(5);
 
@@ -20,10 +20,10 @@ const fetchDashboardData = async () => {
     // Dynamic revenue calculation from completed orders
     const { data: revenueData, error: revenueError } = await supabase
         .from('orders')
-        .select('total_price')
+        .select('amount')
         .eq('status', 'completed');
     
-    const totalRevenue = revenueData?.reduce((sum, order) => sum + order.total_price, 0) || 0;
+    const totalRevenue = revenueData?.reduce((sum, order) => sum + order.amount, 0) || 0;
 
     return { 
         recentOrders,
@@ -66,7 +66,7 @@ const RecentOrderItem = ({ order }) => {
         <div className="grid grid-cols-4 items-center p-4 rounded-xl hover:bg-gray-800/60 transition-colors duration-200 gap-4">
             <p className="font-bold text-white truncate">{order.customer_name || "Noma'lum"}</p>
             <p className="text-sm text-gray-400">{new Date(order.created_at).toLocaleDateString()}</p>
-            <p className="font-mono text-sm text-white text-right">{order.total_price.toLocaleString('uz-UZ')} so'm</p>
+            <p className="font-mono text-sm text-white text-right">{(order.amount || 0).toLocaleString('uz-UZ')} so'm</p>
             <div className="flex justify-end">{getStatusChip(order.status)}</div>
         </div>
     );

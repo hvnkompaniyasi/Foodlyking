@@ -63,7 +63,7 @@ const Orders = () => {
                 <td className="p-4 font-black tracking-tighter-premium">#{order.id.toString().slice(0, 8)}</td>
                 <td className="p-4">{order.customer_name || "Noma'lum"}</td>
                 <td className="p-4">{new Date(order.created_at).toLocaleDateString()}</td>
-                <td className="p-4 font-bold text-right">{(order.total_price || 0).toLocaleString()} so'm</td>
+                <td className="p-4 font-bold text-right">{(order.amount || 0).toLocaleString()} so'm</td>
                 <td className="p-4">
                     <div className="flex justify-end">
                          <div style={{ '--status-color': status.color, boxShadow: `0 0 15px -5px ${status.color}60` }} className={`flex items-center gap-2 text-xs font-bold py-1.5 px-3 rounded-full bg-[var(--status-color)]/10 text-[var(--status-color)]`}>

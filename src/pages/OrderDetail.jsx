@@ -145,7 +145,7 @@ const OrderDetail = () => {
                                 value={cancelReason}
                                 onChange={e => setCancelReason(e.target.value)}
                                 placeholder="Masalan: 'Afsuski, tanlangan taom hozirda mavjud emas...'"
-                                className="w-full p-4 bg-white border border-gray-300 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#F26522]"
+                                className="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#F26522]"
                                 rows={4}
                                 aria-label="Bekor qilish sababi"
                             ></textarea>

@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { TrendingUp, ShoppingBag, Users, DollarSign } from 'lucide-react'
+import { TrendingUp, ShoppingBag, Users } from 'lucide-react'
 
 const StatCard = ({ title, value, icon: Icon, trend }) => (
     <div className="premium-card !p-6 flex items-start justify-between">
@@ -21,10 +21,10 @@ const Dashboard = () => {
     return (
         <div className="space-y-10">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard title="Umumiy Savdo" value="$42,500" icon={DollarSign} trend="+12.5%" />
+                <StatCard title="Umumiy Savdo" value="531,250,000 so'm" icon={ShoppingBag} trend="+12.5%" />
                 <StatCard title="Umumiy Buyurtmalar" value="1,280" icon={ShoppingBag} trend="+8.2%" />
                 <StatCard title="Mijozlar" value="1,420" icon={Users} trend="+3.1%" />
-                <StatCard title="Bugungi Savdo" value="$425.00" icon={PieChart} trend="+0.4%" />
+                <StatCard title="Bugungi Savdo" value="5,312,500 so'm" icon={PieChart} trend="+0.4%" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -44,7 +44,7 @@ const Dashboard = () => {
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-sm font-bold">$42.00</p>
+                                    <p className="text-sm font-bold">525,000 so'm</p>
                                     <span className="text-[10px] bg-green-50 text-green-600 px-2 py-0.5 rounded-full font-bold">YETKAZILDI</span>
                                 </div>
                             </div>

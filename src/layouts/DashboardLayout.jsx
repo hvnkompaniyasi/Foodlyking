@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -11,7 +12,8 @@ import {
   Menu as MenuIcon,
   X,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Search
 } from 'lucide-react'
 
 const DashboardLayout = () => {
@@ -20,6 +22,7 @@ const DashboardLayout = () => {
   const location = useLocation()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -38,6 +41,10 @@ const DashboardLayout = () => {
     { icon: Users, label: 'Mijozlar', path: '/customers' },
     { icon: PieChart, label: 'Statistika', path: '/stats' },
   ]
+
+  const filteredMenuItems = menuItems.filter(item =>
+    item.label.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   const SidebarContent = ({ collapsed = false, isMobile = false }) => (
     <div className="flex flex-col h-full bg-white border-r border-gray-100 shadow-[25px_0_60px_-15px_rgba(0,0,0,0.05)] transition-all duration-300 relative z-[1001] !opacity-100">
@@ -67,12 +74,21 @@ const DashboardLayout = () => {
       </div>
 
       <div className="px-4 mb-4">
-        <div className="h-[1px] bg-gray-50 w-full" />
+        <div className="relative px-4">
+          <Search className="absolute left-8 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Qidiruv..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-gray-50 border border-gray-200 rounded-full py-3 pl-12 pr-4 text-sm font-medium text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black/50"
+          />
+        </div>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-6 mt-6 space-y-3">
-        {menuItems.map((item) => {
+        {filteredMenuItems.map((item) => {
           const isActive = location.pathname === item.path
           return (
             <Link
@@ -122,7 +138,7 @@ const DashboardLayout = () => {
     <div className="flex min-h-screen bg-[#f9fafb]">
       {/* Desktop Sidebar */}
       <motion.aside
-        animate={{ width: isCollapsed ? 100 : 320 }}
+        animate={{ width: isCollapsed ? 120 : 320 }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
         className="hidden lg:block fixed left-0 top-0 h-screen z-[1001]"
       >
@@ -162,7 +178,7 @@ const DashboardLayout = () => {
       </AnimatePresence>
 
       {/* Main Content */}
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${isCollapsed ? 'lg:ml-20' : 'lg:ml-72'}`}>
+      <div className={`flex-1 flex flex-col transition-all duration-300 ${isCollapsed ? 'lg:ml-32' : 'lg:ml-80'}`}>
         <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-4 sm:px-6 lg:px-10 sticky top-0 z-30">
           <div className="flex items-center gap-2 sm:gap-4">
             <button

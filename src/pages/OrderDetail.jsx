@@ -20,7 +20,7 @@ const workflowConfig = {
 };
 
 const initialOrders = {
-    '7892': { id: '#FDLK-7892', customer: { name: 'Azizbek Akbarov', phone: '+998 90 123 45 67' }, date: '2024-07-30 14:25', amount: 102000, status: 'Yangi', items: [{ name: 'BBQ Burger', quantity: 2, price: 45000, image: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?q=80&w=200' }, { name: 'Cola 1.5L', quantity: 1, price: 12000, image: null }] },
+    '7892': { id: '7892', customer: { name: 'Azizbek Akbarov', phone: '+998 90 123 45 67' }, date: '2024-07-30 14:25', amount: 102000, status: 'Yangi', items: [{ name: 'BBQ Burger', quantity: 2, price: 45000, image: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?q=80&w=200' }, { name: 'Cola 1.5L', quantity: 1, price: 12000, image: null }] },
 };
 
 const OrderDetail = () => {
@@ -59,7 +59,7 @@ const OrderDetail = () => {
                         <ArrowLeft size={22} />
                     </button>
                     <div className='flex items-center gap-4'>
-                        <h1 className="text-3xl md:text-4xl font-black tracking-tighter-premium text-white">Buyurtma {order.id}</h1>
+                        <h1 className="text-3xl md:text-4xl font-black tracking-tighter-premium text-white">Buyurtma #{order.id}</h1>
                         {currentStatus && (
                             <div style={{ '--status-color': currentStatus.color, boxShadow: `0 0 20px -3px ${currentStatus.color}60` }} className={`flex items-center gap-2 text-xs font-bold py-2 px-4 rounded-full bg-[var(--status-color)]/10 text-[var(--status-color)]`}>
                                 <currentStatus.icon size={16} />

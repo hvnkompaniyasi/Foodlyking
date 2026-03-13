@@ -1,14 +1,22 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, CheckCircle, Printer, X, ShoppingCart, Clock, Bike, Check as CheckIcon } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Printer, X, ShoppingCart, Clock, Bike, Check as CheckIcon, ThumbsUp, CheckCheck } from 'lucide-react';
 
 const statusConfig = {
     'Yangi': { color: '#FFC20E', icon: ShoppingCart, label: 'Yangi' },
-    'Tayyorlanmoqda': { color: '#3B82F6', icon: Clock, label: 'Tayyorlanmoqda' },
+    'Tayyorlanmoqda': { color: '#4285F4', icon: Clock, label: 'Tayyorlanmoqda' },
+    'Tayyor': { color: '#3B82F6', icon: ThumbsUp, label: 'Tayyor'},
     'Yo\'lda': { color: '#F26522', icon: Bike, label: 'Yo\'lda' },
     'Yetkazildi': { color: '#00A99D', icon: CheckIcon, label: 'Yetkazildi' },
     'Bekor qilindi': { color: '#EF4444', icon: X, label: 'Bekor qilindi' },
+};
+
+const workflowConfig = {
+    'Yangi': { text: 'QABUL QILISH', nextStatus: 'Tayyorlanmoqda', color: '#00A99D', icon: CheckCircle },
+    'Tayyorlanmoqda': { text: 'TAYYOR', nextStatus: 'Tayyor', color: '#4285F4', icon: ThumbsUp },
+    'Tayyor': { text: 'YO\'LGA CHIQARISH', nextStatus: 'Yo\'lda', color: '#F26522', icon: Bike },
+    'Yo\'lda': { text: 'YETKAZILDI', nextStatus: 'Yetkazildi', color: '#00A99D', icon: CheckCheck },
 };
 
 const initialOrders = {
@@ -35,12 +43,12 @@ const OrderDetail = () => {
     const handleCancelSubmit = () => {
         if (cancelReason.trim()) {
             handleStatusUpdate('Bekor qilindi');
-            console.log('Buyurtma bekor qilindi. Sabab:', cancelReason);
             setCancelModalOpen(false);
         }
     };
     
     const currentStatus = useMemo(() => statusConfig[order.status], [order.status]);
+    const currentAction = workflowConfig[order.status];
 
     return (
         <div className="bg-black text-white min-h-full p-6 md:p-8 space-y-8 font-sans">
@@ -52,16 +60,23 @@ const OrderDetail = () => {
                     </button>
                     <div className='flex items-center gap-4'>
                         <h1 className="text-3xl md:text-4xl font-black tracking-tighter-premium text-white">Buyurtma {order.id}</h1>
-                        <div style={{ '--status-color': currentStatus.color, boxShadow: `0 0 20px -3px ${currentStatus.color}60` }} className={`flex items-center gap-2 text-xs font-bold py-2 px-4 rounded-full bg-[var(--status-color)]/10 text-[var(--status-color)]`}>
-                            <currentStatus.icon size={16} />
-                            <span>{currentStatus.label}</span>
-                        </div>
+                        {currentStatus && (
+                            <div style={{ '--status-color': currentStatus.color, boxShadow: `0 0 20px -3px ${currentStatus.color}60` }} className={`flex items-center gap-2 text-xs font-bold py-2 px-4 rounded-full bg-[var(--status-color)]/10 text-[var(--status-color)]`}>
+                                <currentStatus.icon size={16} />
+                                <span>{currentStatus.label}</span>
+                            </div>
+                        )}
                     </div>
                 </div>
                  <div className="flex items-center gap-3 w-full md:w-auto">
-                    {order.status === 'Yangi' && (
-                        <button onClick={() => handleStatusUpdate('Tayyorlanmoqda')} className="flex-1 md:flex-none flex items-center justify-center gap-2 py-3 px-5 bg-[#00A99D] text-white rounded-xl font-bold hover:bg-[#00A99D]/90 transition-all shadow-lg shadow-green-500/20" aria-label="Buyurtmani qabul qilish">
-                            <CheckCircle size={18} /> Qabul qilish
+                    {currentAction && (
+                        <button 
+                            onClick={() => handleStatusUpdate(currentAction.nextStatus)} 
+                            className="flex-1 md:flex-none flex items-center justify-center gap-2 py-3 px-5 text-white rounded-xl font-bold uppercase transition-all shadow-lg"
+                            style={{ backgroundColor: currentAction.color, boxShadow: `0 0 20px -3px ${currentAction.color}60` }}
+                            aria-label={currentAction.text}
+                        >
+                            <currentAction.icon size={18} /> {currentAction.text}
                         </button>
                     )}
                     <button className="p-3 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors" aria-label="Chekni chop etish">

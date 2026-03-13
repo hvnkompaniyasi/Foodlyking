@@ -60,7 +60,7 @@ const RecentOrderItem = ({ order }) => {
 
     return (
         <div className="grid grid-cols-4 items-center p-4 rounded-xl hover:bg-gray-800/60 transition-colors duration-200 gap-4">
-            <p className="font-bold text-white truncate">{order.customer_name || 'Noma'lum'}</p>
+            <p className="font-bold text-white truncate">{order.customer_name || "Noma'lum"}</p>
             <p className="text-sm text-gray-400">{new Date(order.created_at).toLocaleDateString()}</p>
             <p className="font-mono text-sm text-white text-right">{order.total_price.toLocaleString('uz-UZ')} so'm</p>
             <div className="flex justify-end">{getStatusChip(order.status)}</div>

@@ -119,7 +119,29 @@ const OrderDetail = () => {
                 </div>
             </div>
             
-            <AnimatePresence>{isCancelModalOpen && (<div className="fixed inset-0 z-50 flex items-center justify-center p-4" aria-modal="true"><motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setCancelModalOpen(false)} /><motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="relative w-full max-w-md bg-gray-900 border border-gray-700 rounded-2xl p-8 shadow-2xl"><h2 className="font-bold text-xl text-white mb-4">Buyurtmani bekor qilish</h2><p className="text-gray-400 mb-6">Iltimos, bekor qilish sababini aniq va tushunarli qilib yozing. Bu ma'lumot mijozga yuboriladi.</p><textarea value={cancelReason} onChange={e => setCancelReason(e.target.value)} placeholder="Masalan: 'Kechirasiz, tanlangan taom hozirda mavjud emas...'" className="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500" rows={4} aria-label="Bekor qilish sababi"></textarea><div className="flex justify-end gap-4 mt-6"><button onClick={() => setCancelModalOpen(false)} className="py-2 px-5 bg-gray-700 text-white font-bold rounded-lg hover:bg-gray-600 transition-all">Ortga</button><button onClick={handleCancelSubmit} disabled={!cancelReason.trim()} className="py-2 px-5 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-all disabled:bg-red-900 disabled:text-gray-500">Tasdiqlash</button></div></motion.div></div>)}</AnimatePresence>
+            <AnimatePresence>
+                {isCancelModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" aria-modal="true">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setCancelModalOpen(false)} />
+                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="relative w-full max-w-md bg-gray-900 border border-gray-700 rounded-2xl p-8 shadow-2xl">
+                            <h2 className="font-bold text-xl text-white mb-2">Buyurtmani bekor qilish</h2>
+                            <p className="text-gray-400 mb-6">Iltimos, bekor qilish sababini aniq yozing. Bu mijozga bildirishnoma sifatida yuboriladi.</p>
+                            <textarea 
+                                value={cancelReason}
+                                onChange={e => setCancelReason(e.target.value)}
+                                placeholder="Masalan: 'Afsuski, tanlangan taom hozirda mavjud emas...'"
+                                className="w-full p-4 bg-white border border-gray-300 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#F26522]"
+                                rows={4}
+                                aria-label="Bekor qilish sababi"
+                            ></textarea>
+                            <div className="flex justify-end gap-4 mt-6">
+                                <button onClick={() => setCancelModalOpen(false)} className="py-2 px-5 bg-gray-700 text-white font-bold rounded-lg hover:bg-gray-600 transition-all">Ortga</button>
+                                <button onClick={handleCancelSubmit} disabled={!cancelReason.trim()} className="py-2 px-5 bg-[#F26522] text-white font-bold rounded-lg hover:bg-[#F26522]/90 transition-all disabled:bg-gray-500 disabled:cursor-not-allowed">Tasdiqlash</button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

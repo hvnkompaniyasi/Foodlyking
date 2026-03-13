@@ -35,7 +35,7 @@ const DashboardLayout = () => {
     { icon: Package, label: 'Buyurtmalar', path: '/orders' },
     { icon: Users, label: 'Operatorlar', path: '/operators' },
     { icon: Users, label: 'Mijozlar', path: '/customers' },
-    { icon: PieChart, label: 'Statistika', path: '/stats' },
+    { icon: PieChart, label: 'Statistika', path: '/statistics' }, // Corrected path
   ]
 
   const filteredMenuItems = menuItems.filter(item => 

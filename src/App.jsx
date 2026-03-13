@@ -9,6 +9,7 @@ import Orders from './pages/Orders'
 import Operators from './pages/Operators'
 import AddOperator from './pages/AddOperator'
 import Customers from './pages/Customers'
+import Statistics from './pages/Statistics' // Import the new page
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
               <Route path="/operators" element={<Operators />} />
               <Route path="/operators/add" element={<AddOperator />} />
               <Route path="/customers" element={<Customers />} />
+              <Route path="/statistics" element={<Statistics />} /> {/* Add the new route */}
               {/* Other routes can be added here */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>

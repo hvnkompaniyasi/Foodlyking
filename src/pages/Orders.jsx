@@ -1,167 +1,156 @@
-import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronDown, Package, Beef, GlassWater } from 'lucide-react'
+import React, { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown, Search, Printer, CheckCircle, XCircle, Clock, Bike, Check } from 'lucide-react';
 
-// Mock Data for Orders
+// --- MOCK DATA ---
 const mockOrders = [
-  {
-    id: '#FDLK-7892',
-    customerName: "O'tkirbek Karimov",
-    items: [
-      { name: 'Chicken King Burger', quantity: 2, icon: Beef },
-      { name: 'Cola 1.5L', quantity: 1, icon: GlassWater },
-    ],
-    totalAmount: 58000,
-    status: 'Yangi',
-    timestamp: '2024-07-28T10:30:00Z',
-  },
-  {
-    id: '#FDLK-7891',
-    customerName: 'Ali Valiyev',
-    items: [{ name: 'Double Cheeseburger', quantity: 1, icon: Beef }],
-    totalAmount: 32000,
-    status: 'Tayyorlanmoqda',
-    timestamp: '2024-07-28T10:25:00Z',
-  },
-  {
-    id: '#FDLK-7890',
-    customerName: 'Sardor Ahmedov',
-    items: [
-        { name: 'Special Combo', quantity: 1, icon: Beef },
-        { name: 'Fanta 1L', quantity: 2, icon: GlassWater },
-    ],
-    totalAmount: 75000,
-    status: "Yo'lda",
-    timestamp: '2024-07-28T10:15:00Z',
-  },
-  {
-    id: '#FDLK-7889',
-    customerName: 'Javohir Toshmatov',
-    items: [{ name: 'Beef Burger', quantity: 4, icon: Beef }],
-    totalAmount: 112000,
-    status: 'Yetkazildi',
-    timestamp: '2024-07-27T18:45:00Z',
-  },
-    {
-    id: '#FDLK-7888',
-    customerName: 'Rustam Karimov',
-    items: [{ name: 'Student Combo', quantity: 1, icon: Beef }],
-    totalAmount: 25000,
-    status: 'Bekor qilindi',
-    timestamp: '2024-07-27T15:20:00Z',
-  },
+    { id: '#FDLK-7892', customer: { name: 'Azizbek Akbarov', phone: '+998 90 123 45 67' }, date: '2024-07-30 14:25', amount: 95000, status: 'Yangi', items: [{ name: 'BBQ Burger', quantity: 2 }, { name: 'Cola 1.5L', quantity: 1 }] },
+    { id: '#FDLK-7891', customer: { name: 'Laylo Rustamova', phone: '+998 93 987 65 43' }, date: '2024-07-30 13:10', amount: 29000, status: 'Tayyorlanmoqda', items: [{ name: 'Chicken King', quantity: 1 }] },
+    { id: '#FDLK-7890', customer: { name: 'Sardor Komilov', phone: '+998 99 555 88 99' }, date: '2024-07-29 18:45', amount: 75000, status: 'Yo\'lda', items: [{ name: 'Special Kombo', quantity: 1 }] },
+    { id: '#FDLK-7889', customer: { name: 'Madina Aliyeva', phone: '+998 91 234 56 78' }, date: '2024-07-29 12:05', amount: 37000, status: 'Yetkazildi', items: [{ name: 'Student Kombo', quantity: 1 }, { name: 'Cola 0.5L', quantity: 1 }] },
+    { id: '#FDLK-7888', customer: { name: 'Otabek Abdullaev', phone: '+998 94 657 34 21' }, date: '2024-07-28 20:15', amount: 54000, status: 'Bekor qilindi', items: [{ name: 'BBQ Burger', quantity: 1 }, { name: 'Fanta 1L', quantity: 1 }] },
 ];
 
-const statusColors = {
-  'Yangi': 'bg-[#FFC20E]/10 text-[#FFC20E]',
-  'Tayyorlanmoqda': 'bg-blue-500/10 text-blue-500',
-  "Yo'lda": 'bg-purple-500/10 text-purple-500',
-  'Yetkazildi': 'bg-[#00A99D]/10 text-[#00A99D]',
-  'Bekor qilindi': 'bg-[#F26522]/10 text-[#F26522]',
+const statusConfig = {
+    'Yangi': { color: '#FFC20E', icon: Clock, label: 'Yangi' },
+    'Tayyorlanmoqda': { color: '#3B82F6', icon: Clock, label: 'Tayyorlanmoqda' },
+    'Yo\'lda': { color: '#F26522', icon: Bike, label: 'Yo\'lda' },
+    'Yetkazildi': { color: '#00A99D', icon: Check, label: 'Yetkazildi' },
+    'Bekor qilindi': { color: '#EF4444', icon: XCircle, label: 'Bekor qilindi' },
 };
 
-const filterTabs = ['Barchasi', 'Yangi', 'Tayyorlanmoqda', "Yo'lda", 'Yetkazildi'];
+const filterTabs = ['Barchasi', 'Yangi', 'Tayyorlanmoqda', 'Yo\'lda', 'Yetkazildi'];
 
-const Orders = () => {
-  const [activeFilter, setActiveFilter] = useState('Barchasi');
-  const [expandedOrderId, setExpandedOrderId] = useState(null);
+// --- Order Row Component ---
+const OrderRow = ({ order }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const { color, icon: Icon } = statusConfig[order.status] || {};
 
-  const filteredOrders = mockOrders.filter(order => 
-    activeFilter === 'Barchasi' || order.status === activeFilter
-  );
+    const isNew = order.status === 'Yangi';
 
-  const toggleOrderDetails = (id) => {
-    setExpandedOrderId(expandedOrderId === id ? null : id);
-  }
-
-  return (
-    <div className="space-y-8">
-      {/* Filters Panel */}
-      <div className="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-2">
-        {filterTabs.map(tab => (
-          <button 
-            key={tab}
-            onClick={() => setActiveFilter(tab)}
-            className={`px-6 py-3 text-sm font-black rounded-[1.2rem] transition-all duration-300 ${activeFilter === tab 
-                ? 'bg-black text-white shadow-lg' 
-                : 'text-gray-500 hover:bg-gray-100'}`}
+    return (
+        <React.Fragment>
+            <tr 
+                onClick={() => setIsExpanded(!isExpanded)} 
+                className="group bg-white hover:shadow-2xl hover:shadow-gray-500/10 rounded-2xl transition-all duration-300 cursor-pointer"
+                aria-expanded={isExpanded}
+                aria-label={`Buyurtma ${order.id} tafsilotlarini ${isExpanded ? 'yopish' : 'ochish'}`}
             >
-            {tab}
-          </button>
-        ))}
-      </div>
+                <td className="p-5 rounded-l-2xl">
+                    <span className={`font-black text-sm ${isNew ? 'text-orange-500' : 'text-gray-800'}`}>{order.id}</span>
+                    {isNew && <div className="w-2 h-2 rounded-full bg-orange-500 absolute left-2 top-1/2 -translate-y-1/2 animate-pulse"></div>}
+                </td>
+                <td className="p-5 font-bold text-sm text-gray-600">{order.customer.name}</td>
+                <td className="p-5 font-medium text-xs text-gray-500">{order.date}</td>
+                <td className="p-5"><span className="font-black text-black text-sm">{order.amount.toLocaleString()} so'm</span></td>
+                <td className="p-5">
+                    <div style={{ '--status-color': color, boxShadow: `0 0 15px -2px ${color}50` }} className={`flex items-center gap-2 text-xs font-bold py-2 px-3 rounded-lg bg-[var(--status-color)] text-white`}>
+                        <Icon size={14} />
+                        <span>{order.status}</span>
+                    </div>
+                </td>
+                <td className="p-5 rounded-r-2xl text-right">
+                    <ChevronDown size={20} className={`text-gray-400 group-hover:text-black transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+                </td>
+            </tr>
+            <AnimatePresence>
+                {isExpanded && (
+                    <motion.tr initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                        <td colSpan={6} className="pb-4 px-2">
+                            <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="overflow-hidden">
+                                <div className="bg-gray-50 rounded-2xl p-5 mx-2.5 flex justify-between items-start">
+                                    <div>
+                                        <h4 className="font-black text-xs uppercase tracking-wider text-gray-500 mb-3">Tarkibi</h4>
+                                        <ul className="space-y-2 mb-4">
+                                            {order.items.map(item => <li key={item.name} className="text-sm font-bold text-gray-700">{item.quantity}x {item.name}</li>)}
+                                        </ul>
+                                        <h4 className="font-black text-xs uppercase tracking-wider text-gray-500 mb-2">Mijoz raqami</h4>
+                                        <p className="font-bold text-gray-700">{order.customer.phone}</p>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <button aria-label="Kvitansiya chiqarish" className="p-3 bg-white rounded-lg shadow-sm border text-gray-600 hover:text-black hover:border-gray-300 transition-all"><Printer size={16} /></button>
+                                        <button aria-label="Buyurtmani bekor qilish" className="p-3 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all"><XCircle size={16} /></button>
+                                        <button aria-label="Buyurtmani tasdiqlash" className="flex items-center gap-2 p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all font-bold text-sm"><CheckCircle size={16} /> Tasdiqlash</button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </td>
+                    </motion.tr>
+                )}
+            </AnimatePresence>
+        </React.Fragment>
+    );
+};
 
-      {/* Orders Table/List */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 divide-y divide-gray-100">
-        {/* Table Header */}
-        <div className="grid grid-cols-12 px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">
-            <div className="col-span-2">Buyurtma ID</div>
-            <div className="col-span-3">Mijoz</div>
-            <div className="col-span-2">Umumiy Summa</div>
-            <div className="col-span-2">Holati</div>
-            <div className="col-span-2">Vaqti</div>
-            <div className="col-span-1"></div>
-        </div>
+// --- Main Orders Page Component ---
+const Orders = () => {
+    const [activeFilter, setActiveFilter] = useState('Barchasi');
+    const [searchTerm, setSearchTerm] = useState('');
 
-        {/* Table Body */}
-        {filteredOrders.map(order => (
-            <div key={order.id}>
-                <div 
-                    className="grid grid-cols-12 px-6 py-5 items-center cursor-pointer hover:bg-gray-50/50 transition-colors"
-                    onClick={() => toggleOrderDetails(order.id)}
-                >
-                    <div className="col-span-2 font-black text-sm text-gray-800">{order.id}</div>
-                    <div className="col-span-3 font-bold text-sm text-gray-600">{order.customerName}</div>
-                    <div className="col-span-2 font-black text-sm text-gray-800">
-                        {order.totalAmount.toLocaleString()} so'm
-                    </div>
-                    <div className="col-span-2">
-                        <span className={`px-3 py-1.5 text-xs font-black rounded-lg ${statusColors[order.status] || 'bg-gray-100 text-gray-800'}`}>
-                            {order.status}
-                        </span>
-                    </div>
-                    <div className="col-span-2 text-sm font-bold text-gray-500">
-                        {new Date(order.timestamp).toLocaleString('uz-UZ', { hour: '2-digit', minute: '2-digit' })}
-                    </div>
-                    <div className="col-span-1 flex justify-end">
-                        <motion.div animate={{ rotate: expandedOrderId === order.id ? 180 : 0 }}>
-                            <ChevronDown size={20} className="text-gray-400" />
-                        </motion.div>
-                    </div>
+    const filteredOrders = useMemo(() => {
+        return mockOrders
+            .filter(order => activeFilter === 'Barchasi' || order.status === activeFilter)
+            .filter(order => 
+                order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                order.customer.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+    }, [activeFilter, searchTerm]);
+
+    return (
+        <div className="space-y-8">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-4xl font-black tracking-tighter-premium">Buyurtmalar</h1>
+                    <p className="text-sm text-gray-500 font-medium tracking-tight">Barcha buyurtmalarni boshqarish paneli</p>
                 </div>
-                
-                {/* Expandable Details Section */}
-                <AnimatePresence>
-                    {expandedOrderId === order.id && (
-                        <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.3, ease: 'easeInOut' }}
-                            className="bg-gray-50/80 px-6 overflow-hidden"
-                        >
-                            <div className="py-4">
-                                <h4 className="font-black text-xs uppercase tracking-wider text-gray-500 mb-3">Buyurtma tarkibi</h4>
-                                <ul className="space-y-3">
-                                    {order.items.map((item, index) => (
-                                        <li key={index} className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border border-gray-100/50">
-                                            <div className="flex items-center gap-4">
-                                                <item.icon size={20} className="text-gray-500" />
-                                                <span className="font-bold text-sm text-gray-800">{item.name}</span>
-                                            </div>
-                                            <span className="font-black text-sm text-gray-600">x{item.quantity}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                <div className="relative w-full md:w-64">
+                    <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input 
+                        type="text"
+                        placeholder="ID yoki Mijoz bo'yicha..."
+                        value={searchTerm}
+                        onChange={e => setSearchTerm(e.target.value)}
+                        className="premium-input bg-white w-full !pl-10"
+                        aria-label="Buyurtmalarni ID yoki mijoz ismi bo'yicha qidirish"
+                    />
+                </div>
             </div>
-        ))}
-      </div>
-    </div>
-  )
-}
 
-export default Orders
+            {/* Segmented Filter */}
+            <div className="w-full bg-gray-100 p-1.5 rounded-2xl flex items-center gap-2">
+                {filterTabs.map(tab => (
+                    <button 
+                        key={tab} 
+                        onClick={() => setActiveFilter(tab)}
+                        className={`flex-1 py-3 px-4 rounded-xl text-sm font-black transition-all duration-300 ${activeFilter === tab ? 'bg-white text-black shadow-md' : 'bg-transparent text-gray-500 hover:text-black'}`}
+                        aria-pressed={activeFilter === tab}
+                    >
+                        {tab}
+                    </button>
+                ))}
+            </div>
+
+            {/* Orders Table */}
+            <div className="overflow-x-auto">
+                 <table className="w-full border-separate" style={{ borderSpacing: '0 1rem' }}>
+                    <thead>
+                        <tr>
+                            <th className="p-4 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Buyurtma ID</th>
+                            <th className="p-4 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Mijoz</th>
+                            <th className="p-4 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Sana</th>
+                            <th className="p-4 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Summa</th>
+                            <th className="p-4 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Status</th>
+                            <th className="p-4"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filteredOrders.map(order => <OrderRow key={order.id} order={order} />)}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+};
+
+export default Orders;
